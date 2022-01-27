@@ -25,10 +25,10 @@ var route = function(path, template, id) {
 let router = function() {
     const path = window.location.hash.slice(1) || "/";
 
-    const view = routers[path];
+    let view = routers[path];
 
     if (view === undefined) {
-        return;
+        view = views['404'];
     }
 
     const id = view.id ? view.id : myApp;
@@ -44,8 +44,19 @@ let onLoad = function () {
 window.addEventListener('load', onLoad);
 window.addEventListener('hashchange', router);
 
+view('404', null, function () {
+    return `<div>
+                <h1>404 File Not Found</h1>
+                <p>Sorry, the file you are looking for does not exist</p>
+            </div`
+})
+
 route('/', function() {
     return "<a href='/home'>Hello, World</div>";
+})
+
+route('/portfolio', function () {
+    return "<div>I am in the Portfolio</div><a href='/'>Return Home</a>"
 })
 
 var fixHref = function(target) {
