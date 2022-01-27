@@ -1,4 +1,4 @@
-var Header = (function () {    
+S.Header = (function () {    
     const template = `<nav class="navbar navbar-expand-lg navbar-dark bg-primary-dark">
                         <div class="container header-container">
                             <a class="navbar-brand" href="/">Soward's Suites</a>
@@ -58,4 +58,4 @@ var Header = (function () {
     
 })();
 
-let header = new Header();
+let header = new S.Header();
