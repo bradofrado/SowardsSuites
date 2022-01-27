@@ -56,7 +56,7 @@ S.Routing = (function () {
     window.addEventListener('hashchange', this.router);    
 });
 
-var r = new S.Routing();
+let r = new S.Routing();
 
 S.Routing.view = function(name, id, templateFunction, path) {
     r.view(name, id, templateFunction, path);
