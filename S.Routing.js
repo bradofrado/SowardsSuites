@@ -6,29 +6,41 @@ S.Routing = (function () {
         views[name] = {content: templateFunction, id: id};
     
         if (path) {
-            route(path, templateFunction);
+            this.route(path, name);
         }
     }
     
-    this.route = function(path, template, id) {
+    this.route = function(path, template) {
         if (typeof template === "function")
         {
-            routers[path] = {content: template, id: id};
+            routers[path] = {content: template};
         }
         else if (typeof template === "string")
         {
-            routers[path] = {content: views[template].content, id: id};
+            routers[path] = {content: views[template].content, name: template};
         }
     }
     
     this.router = function() {
         const path = window.location.hash.slice(1) || "/";
     
-        let view = routers[path];
-    
-        if (view === undefined) {
+        let route = routers[path];
+        let view;
+
+        if (route === undefined) {
             view = views['404'];
         }
+        else {
+            let viewName = route.name;
+
+            if (viewName === undefined)
+            {
+                view = {content: route.content};
+            }
+            else {
+                view = views[viewName];
+            }
+        }                
     
         const id = view.id ? view.id : S.app;
     
