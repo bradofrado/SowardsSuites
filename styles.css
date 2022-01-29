@@ -7,7 +7,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    font-family: "Quattrocento", serif;
+    font-family: "Segoe UI", serif;
     
 }
 
@@ -18,6 +18,8 @@ h1,h2,h3,h4,h5,h6 {
 
 #app {
     flex: 1;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 img {
@@ -26,6 +28,21 @@ img {
 
 button {
     cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.button-primary {
+    background-color: #0f8aa0;
+    height: 2.5rem;
+    color: #fff;
+    margin: 1rem 0;
+    font-weight: 500;
+}
+
+.button-primary:hover {
+    background-color: #18c6e5;
 }
 
 button.nav-link {
@@ -103,6 +120,55 @@ button.navbar-toggler {
     color: inherit;
     cursor: pointer;
 }
+
+/*Login*/
+
+.login-page {
+    margin: 50px 0;
+    text-align: center;
+}
+
+.login-page h1 {
+    font-weight: 300;
+    margin-bottom: 2rem;
+}
+
+.signin-container {
+    margin: 0 auto;
+    width: 300px;
+    padding: 20px;
+}
+
+.form-field {
+    width: 100%;
+    margin-bottom: .5rem;
+}
+
+.form-field input {
+    width: 100%;
+    border: .5px solid #ced4da;
+    border-radius: 3px;
+    height: 35px;
+    color: #495057;
+    padding: 10px 10px;
+    transition: border-color .15s ease-in-out,
+    box-shadow .15s ease-in-out;
+}
+
+.form-field input::placeholder {
+    color: #ced4da;
+}
+
+.form-field input:focus {
+    outline: none;
+    border-color: #78b7f1;
+    border-radius: 2px;
+    box-shadow: 0 0 3px 1px #78b7f1;
+}
+
+/* .signin-form {
+    background-color: ;
+} */
 
 /*footer*/
 
