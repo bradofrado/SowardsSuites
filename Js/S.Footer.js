@@ -58,7 +58,7 @@ S.Footer = (function () {
 
     var _footer = function (id) {
         id = id ? id : "#footer";
-        $(id).html(_template);
+        S.Util.render(id, _template);
     }
 
     return _footer;

@@ -4,9 +4,15 @@
         app: "#app"
     }
 
+    let setDependencies = function() {
+        S.Home = {};
+    };
+
     let onLoad = function () {
-        S.Fix.href("body");        
+        S.Fix.href("body");                
     }
+
+    setDependencies();
 
     window.addEventListener('load', onLoad);
     
