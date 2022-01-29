@@ -1,6 +1,6 @@
 (function () {
     const template = `
-    <div class="container">
+    <div>
         <div class="welcome-text">
             <h1>Welcome to Sowards' Suites</h1>
             <h4>What can we help you with?</h4>

@@ -44,7 +44,7 @@ S.Routing = (function () {
     
         const id = view.id ? view.id : S.app;
     
-        $(id).html(view.content());
+        $(id).html(view.content());        
     }
 
     this.view('404', null, function () {

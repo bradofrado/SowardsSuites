@@ -38,15 +38,18 @@ S.Header = (function () {
     let onMenuClick = function (e) {
         const currTab = $(e.target).attr("name");
 
-        $(e.target).addClass("active");
         $(`[name="${lastTab}"]`).removeClass("active");
-
+        $(e.target).addClass("active");
+        
         lastTab = currTab;
     }
 
     var _header = function() {
         createTab('home', "Home", '/', true);
+        createTab('rooms', "Rooms", '/rooms')
+        createTab('book', "Book", '/book');
         createTab('about', "About", '/about');
+        createTab('login', 'Login', '/login');
 
 
         _template.find('a').on('click', onMenuClick);

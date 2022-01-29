@@ -18,30 +18,37 @@
     
     S.Fix = (function(){
         var _fix = function (target) {
-            const _target = target ? target : "app";
+            const _target = target ? target : S.app;
 
+            var didMutation = false;
             // Create an observer instance linked to the callback function
             const observer = new MutationObserver(function (mutationsList, observer) {
-                fixHref(_target);
+                if (!didMutation)
+                {
+                    S.Fix.href(_target);                    
+                }                
+
+                didMutation = !didMutation;
             });
             const config = {attributes: true, childList: true, subtree: true};
             
             // Start observing the target node for configured mutations
-            observer.observe(document.getElementById(_target), config);  
-        }
+            observer.observe($(_target)[0], config);  
 
-        _fix.fixHref = function(target) {
-            const atags = $(target).find('a');
-        
-            for (let i = 0; i < atags.length; i++)
-            {
-                const oldHref = $(atags[i]).attr('href');
-                $(atags[i]).attr('href', `#${oldHref}`);
+            this.fixHref = function(target) {
+                target = target ? target : S.app;
+                const atags = $(target).find('a');
+            
+                for (let i = 0; i < atags.length; i++)
+                {
+                    const oldHref = $(atags[i]).attr('href');
+                    $(atags[i]).attr('href', `#${oldHref}`);
+                }
             }
         }
         
         return _fix;
-    });
+    })();
 
     let fix = new S.Fix();
 
