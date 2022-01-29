@@ -42,7 +42,9 @@
                 for (let i = 0; i < atags.length; i++)
                 {
                     const oldHref = $(atags[i]).attr('href');
-                    $(atags[i]).attr('href', `#${oldHref}`);
+                    if (oldHref[0] === '/') {
+                        $(atags[i]).attr('href', `#${oldHref}`);
+                    }
                 }
             }
         }
