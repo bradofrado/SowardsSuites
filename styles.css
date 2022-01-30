@@ -97,7 +97,7 @@ button.navbar-toggler {
     justify-content: center;
 }
 
-.home-button {
+.image-button {
     position: relative;
     width: 200px;
     height: 200px;
@@ -107,7 +107,7 @@ button.navbar-toggler {
 }
 
 
-.home-button-text {
+.image-button-text {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -115,7 +115,7 @@ button.navbar-toggler {
     transform: translate(-50%, -50%);
 }
 
-.home-button:hover {
+.image-button:hover {
     background-color: #999;
     color: inherit;
     cursor: pointer;
@@ -169,6 +169,15 @@ button.navbar-toggler {
 /* .signin-form {
     background-color: ;
 } */
+
+.grid-row {
+    display: flex;
+    flex-direction: column;    
+}
+
+.grid-item {
+    display: flex;
+}
 
 /*footer*/
 
@@ -240,7 +249,11 @@ button.navbar-toggler {
         flex-direction: row;
     }
 
-    .home-button {
+    .grid-row {
+        flex-direction: row;
+    }
+
+    .image-button {
         margin: 10px;
         width: 300px;
         height: 300px;

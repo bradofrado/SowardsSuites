@@ -8,6 +8,7 @@ S.Util = {
     },
 
     findName: function(name, content) {
-        return $(content).find(`[name="${name}"]`);
+        const template = content instanceof jQuery ? content : $(content);
+        return template.find(`[name="${name}"]`);
     }
 }

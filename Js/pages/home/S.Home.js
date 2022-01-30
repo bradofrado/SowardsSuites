@@ -17,15 +17,9 @@
 
     let _template = $(template);
     
-    var _addButton = function(options) {
-        var button = new S.Home.Button(options);
-
-        _template.find(`[name="home-buttons"]`).append(button.render());
-    }
-
     for (let i = 0; i < buttons.length; i++)
     {
-        _addButton(buttons[i]);
+        S.ImageButton.addButton(_template.find(`[name="home-buttons"]`), buttons[i]);
     }
 
     S.Routing.view('home', null, function () {
