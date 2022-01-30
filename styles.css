@@ -179,6 +179,10 @@ button.navbar-toggler {
     display: flex;
 }
 
+.about-page h1, p {
+    margin-bottom: 2rem;
+}
+
 /*footer*/
 
 #footer {
@@ -257,5 +261,9 @@ button.navbar-toggler {
         margin: 10px;
         width: 300px;
         height: 300px;
+    }
+
+    .about-page {
+        margin: auto 250px;
     }
 }
