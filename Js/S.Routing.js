@@ -2,12 +2,6 @@ S.Routing = (function () {
     const routers = {};
     const views = {};
 
-    // RegExp.prototype.get = function (s, val) {
-    //     let result = this.exec(s);
-
-    //     return result.map(x => val.exec(x)[0]);
-    // }
-
     RegExp.prototype.execAll = function(s) {
         let match;
         let all = [];

@@ -19,12 +19,12 @@ S.Rooms = (function () {
 
     const buttons = [
         [
-            {name: "Room 1", path: "/rooms/1"},
-            {name: "Room 2", path: "/rooms/2"},
-            {name: "Room 3", path: "/rooms/3"}
+            {name: "Room 1", path: "/rooms/1", img: "/images/room1.jpg"},
+            {name: "Room 2", path: "/rooms/2", img: "/images/room2.jpg"},
+            {name: "Room 3", path: "/rooms/3", img: "/images/room3.jpg"}
         ],
         [
-            {name: "Room 4", path: "/rooms/4"}
+            {name: "Room 4", path: "/rooms/4", img: "/images/room4.jpg"}
         ],
     ]
 

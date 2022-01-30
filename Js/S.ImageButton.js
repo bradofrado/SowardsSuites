@@ -1,15 +1,24 @@
 S.ImageButton = function (options) {
     const template = `
-    <a name="image-button" class="image-button">
-        <div name="image-button-text" class="image-button-text"></div>
-    </a>
+    <div class="image-button-container">
+        <a name="image-button" class="image-button center-center">            
+            <div name="image-button-text" class="image-button-text center-center"></div>
+        </a>
+    </div>
     `;
 
     let _options = options;
     let _template = $(template);
 
-    _template.attr("name", `image-button${_options.id}`);
-    _template.attr("href", _options.path);
+    let button = _template.find("a");
+    button.attr("name", `image-button${_options.id}`);
+    button.attr("href", _options.path);
+
+    if (_options.img) {
+        let img = $("<img>").attr("src", _options.img);
+        _template.append(img);
+        button.addClass("no-color");
+    }
 
     let text = S.Util.findName("image-button-text", _template);
     text.attr("name", `image-button-text${_options.id}`);

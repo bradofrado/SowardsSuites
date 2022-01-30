@@ -10,7 +10,7 @@
     `
 
     const buttons = [
-        {id: 0, name: "Rooms", path: "/room"},
+        {id: 0, name: "Rooms", path: "/rooms", img: "/images/room2.jpg"},
         {id: 1, name: "Book", path: "/book"},
         {id: 2, name: "About", path: "/about"}
     ]
