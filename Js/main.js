@@ -6,6 +6,7 @@
 
     let setDependencies = function() {
         S.Home = {};
+        S.Rooms = {};
     };
 
     let onLoad = function () {
