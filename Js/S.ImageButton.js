@@ -10,10 +10,12 @@ S.ImageButton = function (options) {
     let _options = options;
     let _template = $(template);
 
+    //Give the button a name and path
     let button = _template.find("a");
     button.attr("name", `image-button${_options.id}`);
     button.attr("href", _options.path);
 
+    //If there is an image, put that on
     if (_options.img) {
         let img = $("<img>").attr("src", _options.img);
         _template.append(img);

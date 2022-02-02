@@ -116,6 +116,7 @@ S.Routing = (function () {
 
             if (view == null) {
                 view = views['404'];
+                route = null;
             }            
         }
         else {
@@ -131,7 +132,9 @@ S.Routing = (function () {
             else {
                 view = views[viewName];
             }
-        }                
+        }    
+        
+        S.Routing.onRouteChange.call(path);
     
         const id = view.id ? view.id : S.app;
     
@@ -172,3 +175,25 @@ S.Routing.path = function(path, template, id) {
 S.Routing.route = function () {
     r.router();
 }
+
+S.Routing.handleRouteChange = function () {
+    let subscriptions = [];
+
+    let _subscribe = function (f) {
+        subscriptions.push(f);
+    }
+
+    let _call = function (path) {
+        for (let f of subscriptions) {
+            f(path);
+        }
+    }
+
+    $.extend(this, {
+        subscribe: _subscribe,
+        call: _call
+    });
+};
+let h = new S.Routing.handleRouteChange();
+
+S.Routing.onRouteChange = h;
