@@ -58,7 +58,7 @@ S.Header = (function () {
     }
 
     var _header = function() {
-        createMenuItem('home', "Home", '/', true);
+        createMenuItem('home', "Home", '/');
         createMenuItem('rooms', "Rooms", '/rooms')
         createMenuItem('book', "Book", '/book');
         createMenuItem('about', "About", '/about');
@@ -73,7 +73,7 @@ S.Header = (function () {
         let onRouteChange = function(path) {
             const menuItem = _menuItems[path];
             
-                changeActiveMenu(menuItem);
+            changeActiveMenu(menuItem);
         }  
         
         let changeActiveMenu = function (menuItem) {
