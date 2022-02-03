@@ -8,7 +8,7 @@ options:
     amenities
     bookings
 */
-S.Page.Room = (function () {
+S.Pages.Room = (function () {
     const template = 
     `<div class="room-container">
         <div class="room-main-image"></div>

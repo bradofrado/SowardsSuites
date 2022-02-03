@@ -1,4 +1,4 @@
-S.Header = (function () {       
+S.Control.Header = (function () {       
     const template = `<nav class="navbar navbar-expand-lg navbar-dark bg-primary-dark">
                         <div class="container header-container">
                             <a class="navbar-brand" href="/">Soward's Suites</a>
@@ -20,7 +20,7 @@ S.Header = (function () {
     let _menuItems = {};
     
     let createMenuItem = function (name, label, path, active) {
-        const menuItem = new S.Header.MenuItem({ name: name, label: label, path: path, active: active });
+        const menuItem = new S.Control.Header.MenuItem({ name: name, label: label, path: path, active: active });
         _menuItems[path] = menuItem;
         
         _template.find("#navbarNav ul").append(menuItem.render());
@@ -104,7 +104,7 @@ S.Header = (function () {
     
 })();
 
-S.Header.MenuItem = function(options) {
+S.Control.Header.MenuItem = function(options) {
     const _template = `<li class="nav-item" id="nav-home">
                         <a class="nav-link" name='' href="/"></a>
                     </li>`;        
@@ -158,9 +158,9 @@ S.Header.MenuItem = function(options) {
     extend();
 };
 
-let header = new S.Header();
+let header = new S.Control.Header();
 
-S.Header.changeActiveMenu = function(menuName) {
+S.Control.Header.changeActiveMenu = function(menuName) {
     header.changeActiveMenu(menuName);
 }
 

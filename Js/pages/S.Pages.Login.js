@@ -1,4 +1,4 @@
-S.Login = (function () {
+S.Pages.Login = (function () {
     const template = 
     `<div class="login-page">
         <h1>Log in</h1>

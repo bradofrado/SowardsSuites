@@ -1,4 +1,4 @@
-S.ImageButton = function (options) {
+S.Control.ImageButton = function (options) {
     const template = `
     <div class="image-button-container">
         <a name="image-button" class="image-button center-center">            
@@ -31,8 +31,8 @@ S.ImageButton = function (options) {
     }
 };
 
-S.ImageButton.addButton = function(template, options) {
-    let button = new S.ImageButton(options);
+S.Control.ImageButton.addButton = function(template, options) {
+    let button = new S.Control.ImageButton(options);
 
     const _template = template instanceof jQuery ? template : $(template);
     _template.append(button.render());

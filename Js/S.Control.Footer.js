@@ -1,4 +1,4 @@
-S.Footer = (function () {
+S.Control.Footer = (function () {
     const template = `
     <div class="footer-bottom">
         ALL CONTENT COPYRIGHT &#169 2022 Sowards Suites
@@ -36,4 +36,4 @@ S.Footer = (function () {
     return _footer;
 })();
 
-var footer = new S.Footer();
+var footer = new S.Control.Footer();

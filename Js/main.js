@@ -5,8 +5,8 @@
     }
 
     let setDependencies = function() {
-        S.Home = {};
-        S.Rooms = {};
+        S.Pages = {};
+        S.Control = {};
     };
 
     let onLoad = function () {

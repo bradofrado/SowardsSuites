@@ -1,4 +1,4 @@
-S.About = (function () {
+S.Pages.About = (function () {
     const template = 
     `
     <div class="about-page">

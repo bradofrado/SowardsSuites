@@ -19,7 +19,7 @@
     
     for (let i = 0; i < buttons.length; i++)
     {
-        S.ImageButton.addButton(_template.find(`[name="home-buttons"]`), buttons[i]);
+        S.Control.ImageButton.addButton(_template.find(`[name="home-buttons"]`), buttons[i]);
     }
 
     S.Routing.view('home', null, function () {

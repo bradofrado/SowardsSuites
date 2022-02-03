@@ -1,4 +1,4 @@
-S.Rooms = (function () {
+S.Pages.Rooms = (function () {
     const templatePage = 
     `<div class="rooms-page">
         <h1>Rooms</h1>
@@ -43,7 +43,7 @@ S.Rooms = (function () {
                 const $room = $(templateItem);
                 $room.attr("name", `grid-item${i}-${j}`);
     
-                S.ImageButton.addButton($room, options);
+                S.Control.ImageButton.addButton($room, options);
                 $row.append($room);
 
                 rooms.push(new S.Pages.Room(options));
