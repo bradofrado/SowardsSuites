@@ -198,7 +198,7 @@ button.navbar-toggler {
 .grid-row {
     display: flex;
     flex-direction: column;  
-    justify-content: center;  
+    justify-content: space-around;  
 }
 
 .grid-item {

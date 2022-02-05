@@ -29,7 +29,6 @@ S.Pages.Rooms = (function () {
     // ];
     //TODO:
     //const buttons = options.rooms
-    let rooms = [];
     let roomPages = [];
     let $element = $(templatePage);
     const numRoomsPerRow = 3;
@@ -43,9 +42,10 @@ S.Pages.Rooms = (function () {
         ]
     }
 
-    let _initRooms = function() {
+    let _initRooms = function(rooms) {
         let id = 0;
-        for (let i = 0; i < rooms.length; i) {
+        let i = 0;
+        while (i < rooms.length) {
             const $row = $(templateRow);
             $row.attr("name", `grid-row${i}`);
 
@@ -71,7 +71,7 @@ S.Pages.Rooms = (function () {
 
     let init = function() {
         rooms = _getRooms();
-        _initRooms();
+        _initRooms(rooms);
     }
     
     init();
