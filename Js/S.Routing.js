@@ -12,6 +12,12 @@ S.Routing = (function () {
         return all
     }
 
+    String.prototype.betweenAll = function(s1, s2) {
+        let s = this;
+        let regex = new RegExp(`${s1}[^${s1}${s2}]*${s2}`, 'mg');
+        return regex.execAll(s).map(x => x[0].substring(1,x[0].length - 1));
+    }
+
     let keyValuesToObject = function(keys, values) {
         let result = {};
         for (let i = 0; i < keys.length; i++)
@@ -23,14 +29,14 @@ S.Routing = (function () {
     }
 
     let getParamNames = function (optionalRoute) {
+        //Get all of the expressions with {...}
         const re = /{[^{}]*}/mg
         const a = re.execAll(optionalRoute);
 
-        const b = a.map(x => 
-            /(?<={)(.*)(?=})/g.exec(x)[0]
-            );
+        //Get rid of the { and } characters
+        const b = a.map(x => x[0].substring(1,x[0].length - 1));
 
-        return b;
+        return optionalRoute.betweenAll('{', '}');
     }
 
     let getParamValues = function (path, paramPath) {
@@ -42,9 +48,11 @@ S.Routing = (function () {
             const e = re.exec(path);
             path = path.replace(e[0], '');
         }
+
         path ='/' + path.replace('/', '//') + '/';
 
-        return /\/[^\/]*\//mg.execAll(path).map(x => /(?<=\/)(.*)(?=\/)/mg.exec(x[0])[0]);
+        //return everything in between the / and / characters
+        return path.betweenAll('/', '/');
     }
 
     let findOptionalRoute = function(path) {
