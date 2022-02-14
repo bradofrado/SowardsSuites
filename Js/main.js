@@ -10,7 +10,7 @@
     };
 
     let onLoad = function () {
-        S.Fix.href("body");                
+        //S.Fix.href("body");                
     }
 
     setDependencies();
@@ -53,7 +53,7 @@
         return _fix;
     })();
 
-    let fix = new S.Fix();
+    //let fix = new S.Fix();
 
     S.Fix.href = function (target) {
         fix.fixHref(target);

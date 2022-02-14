@@ -1,6 +1,7 @@
 S.Routing = (function () {
     const routers = {};
     const views = {};
+    const self = this;
 
     RegExp.prototype.execAll = function(s) {
         let match;
@@ -29,13 +30,7 @@ S.Routing = (function () {
     }
 
     let getParamNames = function (optionalRoute) {
-        //Get all of the expressions with {...}
-        const re = /{[^{}]*}/mg
-        const a = re.execAll(optionalRoute);
-
-        //Get rid of the { and } characters
-        const b = a.map(x => x[0].substring(1,x[0].length - 1));
-
+        //return everything in between { and }
         return optionalRoute.betweenAll('{', '}');
     }
 
@@ -87,6 +82,23 @@ S.Routing = (function () {
             }
         }
     }
+
+    let onATagClick = function(e) {
+        e.preventDefault();
+        const $self = $(this);
+        const href = $self.attr('href');
+        S.Routing.changeRoute(href);
+    }
+
+    let fixATags = function($element) {
+        $element.find('a').off('click', onATagClick);
+        $element.find('a').on('click', onATagClick);
+    }
+
+    let onLoad = function() {
+        fixATags($('body'));
+        self.router();
+    }
     
     this.view = function(name, id, templateFunction, path) {
         views[name] = {content: templateFunction, id: id};
@@ -113,7 +125,7 @@ S.Routing = (function () {
     }
     
     this.router = function() {
-        const path = window.location.hash.slice(1) || "/";
+        const path = window.location.pathname || "/";
     
         let route = routers[path];
         let view;
@@ -145,8 +157,13 @@ S.Routing = (function () {
         S.Routing.onRouteChange.call(path);
     
         const id = view.id ? view.id : S.app;
+
+        //Get the element and make all the a tags do our custom routing 
+        let $element = view.content(view.options);
+        $element = typeof $element === "String" ? $($element) : $element;
+        fixATags($element);
     
-        $(id).html(view.content(view.options));        
+        $(id).html($element);        
     }
 
     this.view('404', null, function () {
@@ -159,15 +176,19 @@ S.Routing = (function () {
     this.view('home', null, function () {
         return "<h1>Home</h1>";
     })
-    
-    this.route('/', 'home');
-    
-    this.route('/index.html', 'home');
 
-    this.route('/home', 'home');
+    const init = function() {
+        self.route('/', 'home');
+        self.route('/index.html', 'home');
+        self.route('/home', 'home');
 
-    window.addEventListener('load', this.router);
-    window.addEventListener('hashchange', this.router);    
+        window.addEventListener('load', onLoad);
+        window.addEventListener('popstate', self.router);   
+    }
+    
+    init();
+
+     
 });
 
 let r = new S.Routing();
@@ -182,6 +203,14 @@ S.Routing.path = function(path, template, id) {
 
 S.Routing.route = function () {
     r.router();
+}
+
+S.Routing.changeRoute = function(path) {
+    if (path !== window.location.pathname) {
+        const state = window.history.state;
+        window.history.pushState(state, '', path);
+        r.router();
+    }
 }
 
 S.Routing.handleRouteChange = function () {
