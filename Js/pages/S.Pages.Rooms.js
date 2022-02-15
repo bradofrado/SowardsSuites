@@ -1,4 +1,4 @@
-S.Pages.Rooms = (function () {
+S.Pages.Rooms = (function (_rooms) {
     const templatePage = 
     `<div class="rooms-page">
         <h1>Rooms</h1>
@@ -17,31 +17,12 @@ S.Pages.Rooms = (function () {
     <div class="grid-item"></div>
     `;
 
-    // const buttons = [
-    //     [
-    //         {name: "Room 1", path: "/rooms/0", img: "/images/room1.jpg"},
-    //         {name: "Room 2", path: "/rooms/1", img: "/images/room2.jpg"},
-    //         {name: "Room 3", path: "/rooms/2", img: "/images/room3.jpg"}
-    //     ],
-    //     [
-    //         {name: "Room 4", path: "/rooms/3", img: "/images/room4.jpg"}
-    //     ],
-    // ];
     //TODO:
     //const buttons = options.rooms
     let rooms = [];
     let roomPages = [];
     let $element = $(templatePage);
     const numRoomsPerRow = 3;
-
-    let _getRooms = function () {
-        return [
-            new S.Room({name: "Room 1", path: "/rooms/0", img: "/images/room1.jpg", description: "A lovely room"}),
-            new S.Room({name: "Room 2", path: "/rooms/1", img: "/images/room2.jpg", description: "Yes good"}),
-            new S.Room({name: "Room 3", path: "/rooms/2", img: "/images/room3.jpg", description: "The best one"}),
-            new S.Room({name: "Room 4", path: "/rooms/3", img: "/images/room4.jpg", description: "Oh baby yes"}),
-        ]
-    }
 
     let _initRooms = function() {
         let id = 0;
@@ -52,7 +33,7 @@ S.Pages.Rooms = (function () {
             //Loop until a new row or we run out of rooms
             for (let j = 0; j < numRoomsPerRow && i < rooms.length; j++)
             {
-                const options = {...rooms[i].props, id: id};
+                const options = {...rooms[i].props, path: `/rooms/${id}`, id: id};
                 const $room = $(templateItem);
                 $room.attr("name", `grid-item${i}`);
     
@@ -69,8 +50,8 @@ S.Pages.Rooms = (function () {
         }
     }
 
-    let init = function() {
-        rooms = _getRooms();
+    let init = async function() {
+        rooms = await S.getRooms();
         _initRooms();
     }
     

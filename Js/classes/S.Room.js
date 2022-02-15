@@ -35,3 +35,17 @@ S.Room = (function () {
         _extend();
     };
 })();
+
+S.Room.createFromApi = function(results, mapping) {
+    const rooms = [];
+    for (let result of results) {
+        const settings = {};
+        for (let map in mapping) {
+            settings[map] = result[mapping[map]];
+        }
+
+        rooms.push(new S.Room(settings));
+    }
+
+    return rooms;
+}

@@ -1,64 +1,47 @@
 (function () {
+    let rooms = null;
+    const apiKey = 'sandb_vv0yHixtw0Ta5Nuo8x9HffXY8XOY3O6Blfazx9kS';
+    const _getRooms = async function() {
+        if (rooms === null) {
+            const apiData = await fetchData();
+            rooms = S.Room.createFromApi(apiData.result, {name: "hotel_name", img: "main_photo_url", description: "unit_configuration_label"});
+            // rooms = [
+            //     new S.Room({name: "Room 1", path: "/rooms/0", img: "/images/room1.jpg", description: "A lovely room"}),
+            //     new S.Room({name: "Room 2", path: "/rooms/1", img: "/images/room2.jpg", description: "Yes good"}),
+            //     new S.Room({name: "Room 3", path: "/rooms/2", img: "/images/room3.jpg", description: "The best one"}),
+            //     new S.Room({name: "Room 4", path: "/rooms/3", img: "/images/room4.jpg", description: "Oh baby yes"}),
+            // ];
+        }
+
+        return rooms;
+    }
+
+    const fetchData = function() {
+        return fetch("https://booking-com.p.rapidapi.com/v1/hotels/search?checkout_date=2022-08-06&room_number=1&filter_by_currency=AED&dest_type=city&locale=en-gb&checkin_date=2022-08-05&adults_number=2&order_by=popularity&units=metric&dest_id=-553173&children_number=2&categories_filter_ids=class%3A%3A2%2Cclass%3A%3A4%2Cfree_cancellation%3A%3A1&children_ages=5%2C0&include_adjacency=true&page_number=0", {
+            "method": "GET",
+            "headers": {
+            "x-rapidapi-host": "booking-com.p.rapidapi.com",
+            "x-rapidapi-key": "89f9f760dfmshaab308aa5504b81p126cedjsna5ca59a18e90"
+                }
+        })
+        .then(response => {
+            return response.json();
+            console.log(response);
+        }).then(json => {
+            return json;
+        })
+        .catch(err => {
+            console.error(err);
+        });
+          
+    }
+
     S = {
         debug: false,
-        app: "#app"
+        app: "#app",
+        Pages: {},
+        Control: {},
+        getRooms: _getRooms
     }
-
-    let setDependencies = function() {
-        S.Pages = {};
-        S.Control = {};
-    };
-
-    let onLoad = function () {
-        //S.Fix.href("body");                
-    }
-
-    setDependencies();
-
-    window.addEventListener('load', onLoad);
-    
-    S.Fix = (function(){
-        var _fix = function (target) {
-            const _target = target ? target : S.app;
-
-            var didMutation = false;
-            // Create an observer instance linked to the callback function
-            const observer = new MutationObserver(function (mutationsList, observer) {
-                if (!didMutation)
-                {
-                    S.Fix.href(_target);                    
-                }                
-
-                didMutation = !didMutation;
-            });
-            const config = {attributes: true, childList: true, subtree: true};
-            
-            // Start observing the target node for configured mutations
-            observer.observe($(_target)[0], config);  
-
-            this.fixHref = function(target) {
-                target = target ? target : S.app;
-                const atags = $(target).find('a');
-            
-                for (let i = 0; i < atags.length; i++)
-                {
-                    const oldHref = $(atags[i]).attr('href');
-                    if (oldHref[0] === '/') {
-                        $(atags[i]).attr('href', `#${oldHref}`);
-                    }
-                }
-            }
-        }
-        
-        return _fix;
-    })();
-
-    //let fix = new S.Fix();
-
-    S.Fix.href = function (target) {
-        fix.fixHref(target);
-    }
-    
-      
 })();
 
