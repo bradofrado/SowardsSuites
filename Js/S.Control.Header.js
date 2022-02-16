@@ -71,8 +71,16 @@ S.Control.Header = (function () {
         }
 
         let onRouteChange = function(path) {
-            const menuItem = _menuItems[path];
+            let menuItem = _menuItems[path];
             
+            //If we can't find this path, try to find the root
+            //of this path (ex. /rooms exists but we are going to /rooms/0)
+            if (menuItem === undefined) {
+                const paths = Object.keys(_menuItems);
+                path = paths.find(p => p !== "/" && path.includes(p));
+                menuItem = _menuItems[path];
+            }
+
             changeActiveMenu(menuItem);
         }  
         
