@@ -101,7 +101,7 @@ S.Routing = (function () {
     }
 
     let renderElement = function($element, id) {
-        $element = typeof $element === "String" ? $($element) : $element;
+        $element = typeof $element === "string" ? $($element) : $element;
         fixATags($element);
     
         $(id).html($element); 
@@ -174,7 +174,8 @@ S.Routing = (function () {
             value.then($element => {
                  renderElement($element, id);
             }).catch(err => {
-                console.log(err);
+                console.error(err);
+                renderElement(views['404'].content(), S.app);
             });
 
             const loader = new S.Control.Loading();
