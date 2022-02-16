@@ -60,10 +60,20 @@ S.Pages.Rooms = (function (_rooms) {
     init();
     
     S.Routing.view('rooms', null, function () {
+        if (rooms.length > 0) {
+            return $element;
+        }
+
         return promise.promise();
     }, '/rooms');
 
     S.Routing.view("room", null, function(params) {
+        //If we have loaded pages, render those
+        if (roomPages.length > 0) {
+            return roomPages[params.roomNum].getElement(); 
+        }
+        
+        //Otherwise wait until we are done, then display them
         return promise.promise().then(e => {
             return roomPages[params.roomNum].getElement();
         });
