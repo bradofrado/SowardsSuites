@@ -173,9 +173,12 @@ S.Routing = (function () {
         if (value.then) {
             value.then($element => {
                  renderElement($element, id);
+            }).catch(err => {
+                console.log(err);
             });
 
-            $(id).html("loading...");
+            const loader = new S.Control.Loading();
+            $(id).html(loader.render());
         }
         //Otherwise display the element returned
         else {
@@ -190,11 +193,11 @@ S.Routing = (function () {
                     <h1>404 File Not Found</h1>
                     <p>Sorry, the file you are looking for does not exist</p>
                 </div`
-    })
+    });
 
     this.view('home', null, function () {
         return "<h1>Home</h1>";
-    })
+    });
 
     const init = function() {
         self.route('/', 'home');
