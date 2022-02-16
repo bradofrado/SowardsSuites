@@ -23,6 +23,7 @@ S.Pages.Rooms = (function (_rooms) {
     let roomPages = [];
     let $element = $(templatePage);
     const numRoomsPerRow = 3;
+    const promise = $.Deferred();
 
     let _initRooms = function() {
         let id = 0;
@@ -53,12 +54,13 @@ S.Pages.Rooms = (function (_rooms) {
     let init = async function() {
         rooms = await S.getRooms();
         _initRooms();
+        promise.resolve($element);
     }
     
     init();
     
     S.Routing.view('rooms', null, function () {
-        return $element;
+        return promise.promise();
     }, '/rooms');
 
     S.Routing.view("room", null, function(params) {

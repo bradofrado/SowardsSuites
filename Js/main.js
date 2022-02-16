@@ -1,6 +1,7 @@
 (function () {
-    let rooms = null;
+    let rooms = window.history.state && window.history.state.rooms ? window.history.state.rooms : null;
     const apiKey = 'sandb_vv0yHixtw0Ta5Nuo8x9HffXY8XOY3O6Blfazx9kS';
+    
     const _getRooms = async function() {
         if (rooms === null) {
             const apiData = await fetchData();
@@ -11,6 +12,8 @@
             //     new S.Room({name: "Room 3", path: "/rooms/2", img: "/images/room3.jpg", description: "The best one"}),
             //     new S.Room({name: "Room 4", path: "/rooms/3", img: "/images/room4.jpg", description: "Oh baby yes"}),
             // ];
+            S.saveState({rooms: rooms}, '');
+            
         }
 
         return rooms;
@@ -36,12 +39,18 @@
           
     }
 
+    const _saveState = function(newState) {
+        const state = window.history.state;
+        window.history.pushState({...state, ...newState}, '');
+    }
+
     S = {
         debug: false,
         app: "#app",
         Pages: {},
         Control: {},
-        getRooms: _getRooms
+        getRooms: _getRooms,
+        saveState: _saveState,
     }
 })();
 

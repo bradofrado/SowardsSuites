@@ -99,6 +99,13 @@ S.Routing = (function () {
         fixATags($('body'));
         self.router();
     }
+
+    let renderElement = function($element, id) {
+        $element = typeof $element === "String" ? $($element) : $element;
+        fixATags($element);
+    
+        $(id).html($element); 
+    }
     
     this.view = function(name, id, templateFunction, path) {
         views[name] = {content: templateFunction, id: id};
@@ -159,11 +166,23 @@ S.Routing = (function () {
         const id = view.id ? view.id : S.app;
 
         //Get the element and make all the a tags do our custom routing 
-        let $element = view.content(view.options);
-        $element = typeof $element === "String" ? $($element) : $element;
-        fixATags($element);
-    
-        $(id).html($element);        
+        let value = view.content(view.options);
+
+        //If the page content returned a promise, load the screen until we are 
+        //ready to render
+        if (value.then) {
+            value.then($element => {
+                 renderElement($element, id);
+            });
+
+            $(id).html("loading...");
+        }
+        //Otherwise display the element returned
+        else {
+            renderElement(value, id); 
+        }
+              
+        
     }
 
     this.view('404', null, function () {

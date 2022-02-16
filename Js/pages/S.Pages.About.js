@@ -14,9 +14,9 @@ S.Pages.About = (function () {
     </div>
     `;
 
-    const _template = $(template);
-
+    const $element = $(template);
+    
     S.Routing.view("about", null, function () {
-        return _template;
+        return $element;
     }, '/about');
 })();
