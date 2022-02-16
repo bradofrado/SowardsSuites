@@ -84,10 +84,15 @@ S.Routing = (function () {
     }
 
     let onATagClick = function(e) {
-        e.preventDefault();
         const $self = $(this);
         const href = $self.attr('href');
-        S.Routing.changeRoute(href);
+
+        //For all relative routes (not links to websites),
+        //change the route and don't reload the page
+        if (href[0] === '/') {
+            e.preventDefault();    
+            S.Routing.changeRoute(href);
+        }
     }
 
     let fixATags = function($element) {
