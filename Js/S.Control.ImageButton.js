@@ -16,15 +16,18 @@ S.Control.ImageButton = function (options) {
     button.attr("href", _options.path);
 
     //If there is an image, put that on
-    if (_options.img) {
-        let img = $("<img>").attr("src", _options.img);
+    if (_options.thumbnail) {
+        let img = $("<img>").attr("src", _options.thumbnail);
         _template.append(img);
         button.addClass("no-color");
     }
 
     let text = S.Util.findName("image-button-text", _template);
     text.attr("name", `image-button-text${_options.id}`);
-    text.html(_options.name);
+
+    if (_options.name) {
+        text.html(_options.name);
+    }
 
     this.render = function() {
         return _template;

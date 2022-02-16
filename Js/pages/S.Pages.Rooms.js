@@ -34,7 +34,7 @@ S.Pages.Rooms = (function (_rooms) {
             //Loop until a new row or we run out of rooms
             for (let j = 0; j < numRoomsPerRow && i < rooms.length; j++)
             {
-                const options = {...rooms[i].props, path: `/rooms/${id}`, id: id};
+                const options = {...rooms[i].props, path: `/rooms/${id}`, id: id, name: null};
                 const $room = $(templateItem);
                 $room.attr("name", `grid-item${i}`);
     
@@ -64,6 +64,8 @@ S.Pages.Rooms = (function (_rooms) {
     }, '/rooms');
 
     S.Routing.view("room", null, function(params) {
-        return roomPages[params.roomNum].getElement();
+        return promise.promise().then(e => {
+            return roomPages[params.roomNum].getElement();
+        });
      }, '/rooms/{roomNum}');  
 })();

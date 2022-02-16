@@ -5,14 +5,18 @@
     const _getRooms = async function() {
         if (rooms === null) {
             const apiData = await fetchData();
-            rooms = S.Room.createFromApi(apiData.result, {name: "hotel_name", img: "main_photo_url", description: "unit_configuration_label"});
+            rooms = S.Room.createFromApi(apiData.result, {
+                name: "hotel_name", img: "max_photo_url", 
+                thumbnail: "max_1440_photo_url",
+                description: "unit_configuration_label",
+            });
             // rooms = [
             //     new S.Room({name: "Room 1", path: "/rooms/0", img: "/images/room1.jpg", description: "A lovely room"}),
             //     new S.Room({name: "Room 2", path: "/rooms/1", img: "/images/room2.jpg", description: "Yes good"}),
             //     new S.Room({name: "Room 3", path: "/rooms/2", img: "/images/room3.jpg", description: "The best one"}),
             //     new S.Room({name: "Room 4", path: "/rooms/3", img: "/images/room4.jpg", description: "Oh baby yes"}),
             // ];
-            S.saveState({rooms: rooms}, '');
+            //S.saveState({rooms: rooms}, '');
             
         }
 

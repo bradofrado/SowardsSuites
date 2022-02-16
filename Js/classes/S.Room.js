@@ -14,6 +14,7 @@ S.Room = (function () {
         let _name = options.name;
         let _description = options.description;
         let _mainImg = options.img;
+        let _thumbnail = options.thumbnail;
         let _otherImgs = options.imgs;
         let _amenities = options.amenities;
         let _bookings = options.bookings;
@@ -24,6 +25,7 @@ S.Room = (function () {
                 name: _name,
                 description: _description,
                 mainImg: _mainImg,
+                thumbnail: _thumbnail,
                 imgs: _otherImgs,
                 amenities: _amenities,
                 bookings: _bookings,
