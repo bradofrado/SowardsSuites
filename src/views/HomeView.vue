@@ -21,7 +21,10 @@ export default {
   name: 'HomeView',
   components: {
       ImageButton
-  }
+  },
+    mounted() {
+        this.$root.$data.isLoading = false;
+    }
 }
 </script>
 

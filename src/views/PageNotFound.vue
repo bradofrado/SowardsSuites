@@ -7,6 +7,9 @@
 
 <script>
 export default {
-    name: "PageNotFound"
+    name: "PageNotFound",
+    mounted() {
+        this.$root.$data.isLoading = false;
+    }
 }
 </script>

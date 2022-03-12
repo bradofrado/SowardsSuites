@@ -16,11 +16,18 @@ Vue.use(IconsPlugin)
 Vue.config.productionTip = false
 
 let data = {
-    rooms: rooms
+    rooms: rooms,
+    isLoading: true
 }
 
 new Vue({
   router,
   data,
-  render: h => h(App)
+  render: h => h(App),
+  watch: {
+    '$route': function(to, from) {
+      console.log(`Went from ${from.path} to ${to.path}`);
+      this.$root.$data.isLoading = true;
+    }
+  }
 }).$mount('#app')

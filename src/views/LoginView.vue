@@ -18,7 +18,10 @@
 
 <script>
 export default {
-    name: "LoginView"
+    name: "LoginView",
+    mounted() {
+        this.$root.$data.isLoading = false;
+    }
 }
 </script>
 

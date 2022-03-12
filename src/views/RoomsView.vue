@@ -39,6 +39,9 @@ export default {
             const numRows = Math.ceil(this.$root.$data.rooms.length / 3);
             return numRows;
         }
+    },
+    mounted() {
+      this.$root.$data.isLoading = false;
     }
 }
 </script>

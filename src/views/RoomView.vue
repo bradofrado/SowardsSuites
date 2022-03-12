@@ -20,6 +20,9 @@ export default {
         room() {
             return this.$root.$data.rooms.find(x => x.id === parseInt(this.$route.params.id));
         }
+    },
+    mounted() {
+        this.$root.$data.isLoading = false;
     }
 }
 </script>

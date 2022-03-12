@@ -4,6 +4,9 @@
 
 <script>
 export default {
-    name: "BookView"
+    name: "BookView",
+    mounted() {
+        this.$root.$data.isLoading = false;
+    }
 }
 </script>

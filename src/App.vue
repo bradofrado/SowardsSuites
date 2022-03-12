@@ -2,6 +2,7 @@
     <div id="app">
         <Header/>
         <div id="myApp" class="container">
+            <LoadingBar v-if="isLoading"/>
             <router-view/>
         </div>
         <Footer/>
@@ -11,11 +12,19 @@
 <script>
 import Header from "@/components/Header.vue"
 import Footer from "@/components/Footer.vue"
+import LoadingBar from "@/components/LoadingBar.vue"
+
 export default {
     components: {
         Header,
-        Footer
+        Footer,
+        LoadingBar
     },
+    computed: {
+        isLoading() {
+            return this.$root.$data.isLoading;
+        }
+    }
 }
 </script>
 
