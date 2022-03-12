@@ -198,7 +198,7 @@ S.Routing = (function () {
         return `<div>
                     <h1>404 File Not Found</h1>
                     <p>Sorry, the file you are looking for does not exist</p>
-                </div`
+                </div>`
     });
 
     this.view('home', null, function () {
