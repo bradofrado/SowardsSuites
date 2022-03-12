@@ -1,7 +1,7 @@
 <template>
     <b-navbar class="bg-primary-dark" toggleable="lg" type="dark">
         <div class="container header-container">
-            <b-navbar-brand href="#">Soward's Suites</b-navbar-brand>
+            <b-navbar-brand href="/">Soward's Suites</b-navbar-brand>
 
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
