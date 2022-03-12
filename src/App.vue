@@ -71,4 +71,12 @@ button {
     background-color: #fff;
 }
 
+.button-primary {
+    background-color: #0f8aa0;
+    height: 2.5rem;
+    color: #fff;
+    margin: 1rem 0;
+    font-weight: 500;
+}
+
 </style>
