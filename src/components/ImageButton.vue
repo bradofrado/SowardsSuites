@@ -1,7 +1,7 @@
 <template>
     <div class="image-button-container">
         <router-link name="image-button" :class="'image-button center-center' + (img ? ' no-color' : '')" :to="to">            
-            <div name="image-button-text" class="image-button-text center-center" >{{name}}</div>
+            <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
         </router-link>
         <img v-if="img" :src="`/images/${img}`">
     </div>

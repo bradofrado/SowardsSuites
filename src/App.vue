@@ -1,7 +1,9 @@
 <template>
     <div id="app">
         <Header/>
-        <div id="myApp"><router-view/></div>
+        <div id="myApp" class="container">
+            <router-view/>
+        </div>
         <Footer/>
     </div>
 </template>
@@ -13,7 +15,7 @@ export default {
     components: {
         Header,
         Footer
-    }
+    },
 }
 </script>
 
