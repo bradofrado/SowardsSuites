@@ -1,2 +1,5 @@
 #Ignore all make files
 makefile
+
+dist/
+node_modules/
