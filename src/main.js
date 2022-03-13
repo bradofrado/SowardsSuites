@@ -26,7 +26,6 @@ new Vue({
   render: h => h(App),
   watch: {
     '$route': function(to, from) {
-      console.log(`Went from ${from.path} to ${to.path}`);
       this.$root.$data.isLoading = true;
     }
   }
