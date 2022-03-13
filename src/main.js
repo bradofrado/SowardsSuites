@@ -25,7 +25,7 @@ new Vue({
   data,
   render: h => h(App),
   watch: {
-    '$route': function(to, from) {
+    '$route': function() {
       this.$root.$data.isLoading = true;
     }
   }
