@@ -15,34 +15,50 @@
 
 <script>
 import ImageButton from "@/components/ImageButton.vue"
+import axios from 'axios'
+
 export default {
     name: "RoomsView",
     components: {
         ImageButton
     },
+    data() {
+        return {
+            rooms: []
+        }
+    },
+    created(){
+        this.getRooms();
+    },
     methods: {
+        async getRooms() {
+            try {
+                let response = await axios.get('/api/rooms');
+                this.rooms = response.data;
+                this.$root.$data.isLoading = false;
+
+                return true;
+            } catch(error) {
+                console.log(error);
+                return false;
+            }
+        },
         getRoomInRow(rowNum) {
             if (rowNum === this.numRows) {
-                return this.$root.$data.rooms.slice((rowNum - 1) * 3);
+                return this.rooms.slice((rowNum - 1) * 3);
              
             }
 
-            const rooms =  this.$root.$data.rooms.slice((rowNum - 1) * 3, rowNum * 3);
+            const rooms =  this.rooms.slice((rowNum - 1) * 3, rowNum * 3);
             return rooms;
         }
     },
     computed: {
-        rooms() {
-            return this.$root.$data.rooms;
-        },
         numRows() {
-            const numRows = Math.ceil(this.$root.$data.rooms.length / 3);
+            const numRows = Math.ceil(this.rooms.length / 3);
             return numRows;
         }
     },
-    mounted() {
-      this.$root.$data.isLoading = false;
-    }
 }
 </script>
 
