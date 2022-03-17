@@ -4,8 +4,8 @@
         <div name="grid" class="grid"> 
             <template v-for="rowNum in numRows">
                 <div class="grid-row" :key="rowNum">
-                    <div v-for="room in getRoomInRow(rowNum)" class="grid-item" :key="room.id">
-                        <ImageButton :to="room.path" :name="room.name" :img="room.img"/>
+                    <div v-for="room in getRoomInRow(rowNum)" class="grid-item" :key="room._id">
+                        <ImageButton :to="`/rooms/${room._id}`" :name="room.name" :img="room.thumbnail"/>
                     </div>
                 </div>                
             </template>
