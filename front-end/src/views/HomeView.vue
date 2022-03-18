@@ -6,7 +6,7 @@
             <h4>What can we help you with?</h4>
         </div>
         <div name="home-buttons" class="home-buttons">
-            <ImageButton to="/rooms" name="Rooms" img="room2.jpg"/>
+            <ImageButton to="/rooms" name="Rooms" img="/images/room2.jpg"/>
             <ImageButton to="/book" name="Book"/>
             <ImageButton to="/about" name="About"/>
         </div>
