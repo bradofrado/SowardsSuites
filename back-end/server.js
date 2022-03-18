@@ -10,15 +10,16 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 
-const mongoConnection = 'mongodb+srv://bradofrado:%23Kylie5789@mycluster.yq8un.mongodb.net/sowardssuites';
+//Get the environment variables
+require('dotenv').config();
+
+const mongoConnection = process.env.MONGO_KEY;
+const root = process.env.ROOT;
 
 //connect to the database
 mongoose.connect(mongoConnection, {
     useNewUrlParser: true
 });
-
-//const root = '/var/www/sowardssuites.com';
-const root = '../front-end/public';
 
 const upload = multer({
     dest: root + '/images/',
