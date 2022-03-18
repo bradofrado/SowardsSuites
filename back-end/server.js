@@ -10,12 +10,10 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 
-//Get the environment variables
-require('dotenv').config({ path: '../.env' });
-
-const mongoConnection = process.env.MONGO_KEY;
-const root = process.env.ROOT;
-const port = process.env.SERVER_PORT;
+const env = require('./env.js');
+const mongoConnection = env.mongoConnection;
+const root = env.root;
+const port = env.port;
 
 //connect to the database
 mongoose.connect(mongoConnection, {
