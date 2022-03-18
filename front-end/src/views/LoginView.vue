@@ -5,22 +5,53 @@
         <div class="signin-container">
             <form class="d-flex flex-column">
                 <div class="form-field">
-                    <input type='text' value='' name="username" placeholder="Email"/>
+                    <input type='text' placeholder="Email" v-model="username"/>
                 </div>
                 <div class="form-field">
-                    <input type='password' value='' name="password" placeholder="Password"/>
+                    <input type='password' placeholder="Password" v-model="password"/>
                 </div>
-                <button type="submit" class="button button-primary">Log in</button>
+                <button type="submit" class="button button-primary" @click.prevent="login">Log in</button>
+                <p class="error-text" v-if="error">{{error}}</p>
             </form>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
     name: "LoginView",
+    data() {
+        return {
+            password: "",
+            username: "",
+            error: null
+        }
+    },
     mounted() {
         this.$root.$data.isLoading = false;
+    },
+    methods: {
+        async login() {
+            try {
+                this.$root.$data.isLoading = true;
+                const response = await axios.post('/api/users/login', {
+                    username: this.username,
+                    password: this.password
+                });
+                
+                this.$root.$data.user = response.data;
+                this.$root.$data.isLoading = false;
+                this.username = "";
+                this.password = "";
+            } catch(error) {
+                console.log(error);
+                this.$root.$data.user = null;
+                this.$root.$data.isLoading = false;
+                this.error = error.response.data.message;
+            }
+        }
     }
 }
 </script>
@@ -68,5 +99,14 @@ export default {
     border-color: #78b7f1;
     border-radius: 2px;
     box-shadow: 0 0 3px 1px #78b7f1;
+}
+
+.error-text {
+    display: inline;
+    padding: 5px 20px;
+    border-radius: 30px;
+    font-size: 10px;
+    background-color: #d9534f;
+    color: #fff;
 }
 </style>

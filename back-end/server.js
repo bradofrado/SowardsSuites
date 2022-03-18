@@ -11,15 +11,28 @@ app.use(bodyParser.urlencoded({
 }));
 
 //Get the environment variables
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 const mongoConnection = process.env.MONGO_KEY;
 const root = process.env.ROOT;
+const port = process.env.SERVER_PORT;
 
 //connect to the database
 mongoose.connect(mongoConnection, {
     useNewUrlParser: true
 });
+
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
+const cookieSession = require('cookie-session');
+app.use(cookieSession({
+    name: 'session',
+    keys: ['secretValue'],
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
 
 const upload = multer({
     dest: root + '/images/',
@@ -45,6 +58,9 @@ const roomSchema = new mongoose.Schema({
 
 const Room = mongoose.model('Room', roomSchema);
 
+const users = require("./users.js");
+app.use("/api/users", users.routes);
+
 app.get('/api/rooms', async (req, res) => {
     try {
         let rooms = await Room.find();
@@ -55,4 +71,4 @@ app.get('/api/rooms', async (req, res) => {
     }
 })
 
-app.listen(3001, () => console.log('Server listening on port 3001!'));
+app.listen(port, () => console.log(`Server listening on port ${port}!`));

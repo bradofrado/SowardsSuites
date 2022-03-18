@@ -15,7 +15,8 @@ Vue.use(IconsPlugin)
 Vue.config.productionTip = false
 
 let data = {
-    isLoading: true
+    isLoading: true,
+    user: null
 }
 
 new Vue({
