@@ -40,7 +40,7 @@
                         <input type='password' placeholder="Password" v-model="password"/>
                     </div>
                 </fieldset>
-                <button type="submit" class="button button-primary" @click.prevent="login">Sign Up</button>
+                <button type="submit" class="button button-primary" @click.prevent="register">Sign Up</button>
                 <p class="error-text" v-if="error">{{error}}</p>
                 <a href="" @click.prevent="toggleLoginView">Log in</a>
             </form>
@@ -127,16 +127,6 @@ export default {
                 this.$root.$data.isLoading = false;
                 this.error = error.response.data.message;
             }
-        },
-        async logout() {
-            try {
-                this.$root.$data.isLoading = true;
-                await axios.delete('api/users');
-                this.$root.$data.user = null;
-            } catch(error) {
-                console.log(error);
-            }
-            this.$root.$data.isLoading = false;
         },
         toggleLoginView() {
             this.loggingIn = !this.loggingIn;

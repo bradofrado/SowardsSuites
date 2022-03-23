@@ -47,26 +47,12 @@ const deletePhoto = function(path) {
     console.log("File removed:", url);
 }
 
-const roomSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    thumbnail: String,
-    description: String,
-});
-
-const Room = mongoose.model('Room', roomSchema);
-
 const users = require("./users.js");
-app.use("/api/users", users.routes);
+const rooms = require("./rooms.js");
+const bookings = require('./bookings.js');
 
-app.get('/api/rooms', async (req, res) => {
-    try {
-        let rooms = await Room.find();
-        res.send(rooms);
-    } catch (error) {
-        console.log(error);
-        res.sendStatus(500);
-    }
-})
+app.use("/api/users", users.routes);
+app.use('/api/rooms', rooms.routes);
+app.use('/api/bookings', bookings.routes);
 
 app.listen(port, () => console.log(`Server listening on port ${port}!`));

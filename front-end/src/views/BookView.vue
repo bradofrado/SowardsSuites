@@ -49,6 +49,7 @@ export default {
             days: [{
                 date: new Date(),
             }],
+            currUsers: {},
             rooms: [],
             room: null,
             range: null,
@@ -60,6 +61,7 @@ export default {
     },
     mounted() {
         this.getRooms();
+        this.getBookings();
         this.$root.$data.isLoading = false;
     },
     computed: {
@@ -115,7 +117,36 @@ export default {
                 return false;
             }
         }, 
-        onBook() {
+        async getBookings() {
+            try {
+                let response = await axios.get('/api/bookings');
+                this.days = response.data.map(booking => {
+                    if (!this.currUsers[booking.user.firstname]) {
+                        this.currUsers[booking.user.firstname] = this.color;
+                        this.color = this.next(this.color, this.colors);
+                    }
+
+                    return {
+                        date: {
+                            start: moment(booking.startDate).toDate(),
+                            end: moment(booking.endDate).toDate()
+                        },
+                        person: booking.user.firstname,
+                        rooms: booking.rooms,
+                        color: this.currUsers[booking.user.firstname]
+                    }
+                });
+                console.log(response.data);
+                console.log(this.days);
+
+                //Have something shown on today
+                this.days.push({date: new Date()});
+            } catch(error) {
+                console.log(error);
+            }
+            
+        },
+        async onBook() {
             if (!this.user) {
                 alert("You must be logged in to book a room");
                 return;
@@ -129,21 +160,19 @@ export default {
                 return;
             }
 
-            this.days.push({
-                date: this.range,
-                person: this.user.firstname,
-                rooms: this.selectedRooms,
-                color: this.color
-            });
-            this.range = null;
-            this.rooms = this.rooms.map(room => {
-                room.active = false;
-                room.activeId = room._id;
-                return room;
-            });
-
-            this.color = this.next(this.color, ['blue', 'red', 'orange', 'yellow', 'green', 'teal', 'indigo', 'purple', 'pink', 'gray']);
-
+            try {
+                await axios.post('/api/bookings', {
+                    start: this.range.start,
+                    end: this.range.end,
+                    rooms: this.selectedRooms.map(x => x._id)
+                });
+                this.range = null;
+                this.getBookings();
+                this.getRooms();
+            } catch(error) {
+                console.log(error);
+            }
+            
             console.log(this.days);
         },
         onDayClick() {
@@ -157,7 +186,7 @@ export default {
             room.active = !room.active;
             room.activeId = room._id + room.active;
         },
-        getFormat(day, index) {
+        getFormat(day) {
             if (!day.person) {
                 return {
                     dates: day.date,
@@ -165,7 +194,7 @@ export default {
                 }
             }
 
-            const color = index + 1 < this.colors.length ? this.colors[index+1] : this.colors[0];
+            //const color = index + 1 < this.colors.length ? this.colors[index+1] : this.colors[0];
             const rooms = day.rooms.reduce((prev, curr, i) => {
                 prev += curr.name;
 
@@ -178,7 +207,7 @@ export default {
 
             return {
                 dates: day.date,
-                bar: color,
+                bar: day.color,
                 popover: {
                     label: `${day.person}-${rooms}`
                 }

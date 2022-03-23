@@ -9,12 +9,26 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     name: "User",
     computed: {
         user() {
             return this.$root.$data.user;
         }
+    },
+    methods: {
+        async logout() {
+            try {
+                this.$root.$data.isLoading = true;
+                await axios.delete('api/users');
+                this.$root.$data.user = null;
+            } catch(error) {
+                console.log(error);
+            }
+            this.$root.$data.isLoading = false;
+        },
     }
 }
 </script>
