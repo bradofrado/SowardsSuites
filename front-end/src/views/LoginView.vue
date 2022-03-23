@@ -1,8 +1,7 @@
 <template>
 <div class="login-page">
     <div v-if="user">
-        <h1>Welcome, {{user.firstname}}!</h1>
-        <a href="" @click.prevent="logout">Log out</a>
+        <User/>
     </div>
     <div v-else-if="loggingIn">
         <h1>Log in</h1>
@@ -52,9 +51,13 @@
 
 <script>
 import axios from 'axios'
+import User from '@/components/User.vue'
 
 export default {
     name: "LoginView",
+    components: {
+        User
+    },
     data() {
         return {
             password: "",

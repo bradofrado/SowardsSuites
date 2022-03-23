@@ -13,12 +13,21 @@
 import Header from "@/components/Header.vue"
 import Footer from "@/components/Footer.vue"
 import LoadingBar from "@/components/LoadingBar.vue"
+import axios from 'axios'
 
 export default {
     components: {
         Header,
         Footer,
         LoadingBar
+    },
+    async created() {
+        try {
+            let response = await axios.get('/api/users');
+            this.$root.$data.user = response.data.user;
+        } catch(error) {
+            this.$root.$data.user = null;
+        }
     },
     computed: {
         isLoading() {
@@ -38,6 +47,10 @@ export default {
 }
 html {
     font-size: 14px;
+}
+
+* {
+    border: 0px solid #e2e8f0;
 }
 
 #app {
@@ -84,8 +97,13 @@ button {
     background-color: #0f8aa0;
     height: 2.5rem;
     color: #fff;
-    margin: 1rem 0;
+    /* margin: 1rem 0; */
     font-weight: 500;
+}
+
+.disabled {
+    opacity: .7;
+    cursor: default;
 }
 
 </style>
