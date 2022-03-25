@@ -1,7 +1,7 @@
 <template>
     <div class="loader-container">
         <h1>Soward's Suites</h1>
-        <div class="loader"></div>
+        <div class="loader l-big"></div>
     </div>
 </template>
 
@@ -33,17 +33,30 @@ export default {
     height: 100vh;
     z-index: 1;
 }
+</style>
 
+<style>
 .loader {
-    border: 5px solid #f3f3f3;
+    border: 0px solid #f3f3f3;
     border-radius: 50%;
     border-top: 5px solid #0f8aa0;
-    width: 50px;
-    height: 50px;
     -webkit-animation: spin .8s linear infinite;
     animation: spin .8s linear infinite;
+}
+
+.l-big {
+    height: 50px;
+    width: 50px;
+    border-width: 5px;
     margin: 30px auto;
-  }
+}
+
+.l-small {
+    height: 20px;
+    width: 20px;
+    margin: auto;
+    border-width: 1px;
+}
 
 /* Safari */
   @-webkit-keyframes spin {

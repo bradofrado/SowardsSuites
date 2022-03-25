@@ -4,7 +4,7 @@
     <div class="book-container">
         <div>
             <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
-                :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar"/>
+                :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar" timezone="UTC"/>
             <div class="d-flex justify-content-center mt-3">
                 <span class="date-label">{{rangeStart}}</span>
                 <span class="flex-shrink-0 m-2">
@@ -22,7 +22,12 @@
                     </span>
                 <span class="date-label">{{rangeEnd}}</span>
             </div>
-            <div v-b-tooltip.hover :title="bookBtnTooltip"><button  :class="'button-primary w-25 center ' + bookBtnClass" @click="onBook" :disabled="bookBtnDisabled">Book</button></div>
+            <div v-b-tooltip.hover :title="bookBtnTooltip">
+                <button :class="'button-primary w-25 center ' + bookBtnClass" @click="onBook" :disabled="bookBtnDisabled">
+                    <span v-if="!loading">Book</span>
+                    <div v-else class="loader l-small"></div>
+                </button>
+            </div>
         </div>
         <div class="rooms-container">
             <div v-for="room in rooms" :key="room.activeId">
@@ -56,7 +61,8 @@ export default {
             color: 'blue',
             person: 'Braydon',
             colors: ['blue', 'red', 'orange', 'yellow', 'green', 'teal', 'indigo', 'purple', 'pink', 'gray'],
-            calendar: null
+            calendar: null,
+            loading: false
         }
     },
     mounted() {
@@ -84,7 +90,10 @@ export default {
             return this.rooms.filter(room => room.active);
         },
         bookBtnClass() {
-            return this.bookBtnDisabled ? 'disabled' : '';
+            let btnClass = '';
+            btnClass += this.bookBtnDisabled ? 'disabled ' : '';
+            //btnClass += this.loading ? 'loader ' : '';
+            return btnClass;
         },
         bookBtnDisabled() {
             return !this.range || this.selectedRooms.length === 0;
@@ -161,20 +170,24 @@ export default {
             }
 
             try {
+                this.loading = true;
                 await axios.post('/api/bookings', {
                     start: this.range.start,
                     end: this.range.end,
                     rooms: this.selectedRooms.map(x => x._id)
                 });
+                await this.getRooms();
+                await this.getBookings();
                 this.range = null;
-                this.getBookings();
-                this.getRooms();
+                this.loading = false;
             } catch(error) {
                 console.log(error);
                 
                 if (error.response.data.message) {
                     alert(error.response.data.message);
                 }
+
+                this.loading = false;
             }
             
             console.log(this.days);
