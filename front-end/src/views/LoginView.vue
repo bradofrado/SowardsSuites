@@ -15,8 +15,8 @@
                     <input type='password' placeholder="Password" v-model="password"/>
                 </div>
                 <button type="submit" class="button button-primary" @click.prevent="login">Log in</button>
-                <p class="error-text" v-if="error">{{error}}</p>
-                <a href="" @click.prevent="toggleLoginView">Sign up</a>
+                <p class="error-text mt-2 mb-0" v-if="error">{{error}}</p>
+                <a class="mt-1" href="" @click.prevent="toggleLoginView">Sign up</a>
             </form>
         </div>
     </div>
@@ -68,8 +68,11 @@ export default {
     },
     async created() {
         try {
-            let response = await axios.get('/api/users');
-            this.$root.$data.user = response.data.user;
+            if (!this.$root.$data.user) {
+                let response = await axios.get('/api/users');
+                this.$root.$data.user = response.data.user;
+            }
+            
             this.$root.$data.isLoading = false;
         } catch(error) {
             this.$root.$data.user = null;
@@ -141,11 +144,6 @@ export default {
 .login-page {
     margin: 50px 0;
     text-align: center;
-}
-
-.login-page h1 {
-    font-weight: 300;
-    margin-bottom: 2rem;
 }
 
 .signin-container {

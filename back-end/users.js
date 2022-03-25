@@ -124,7 +124,9 @@ router.post('/login', async (req, res) => {
     // Make sure that the form coming from the browser includes a username and a
     // password, otherwise return an error.
     if (!req.body.username || !req.body.password)
-      return res.sendStatus(400);
+      return res.status(400).send({
+          message: "must include username and password"
+      });
   
     try {
       //  lookup user record
@@ -134,14 +136,14 @@ router.post('/login', async (req, res) => {
       // Return an error if user does not exist.
       if (!user)
         return res.status(403).send({
-          message: "username or password is wrong"
+          message: "username or password is incorrect"
         });
   
       // Return the SAME error if the password is wrong. This ensure we don't
       // leak any information about which users exist.
       if (!await user.comparePassword(req.body.password))
         return res.status(403).send({
-          message: "username or password is wrong"
+          message: "username or password is incorrect"
         });
 
         //set user session info

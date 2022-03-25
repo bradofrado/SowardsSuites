@@ -68,6 +68,11 @@ h1,h2,h3,h4,h5,h6 {
     margin: 10px 0;
 }
 
+h1 {
+    font-weight: 300 !important;
+    margin-bottom: 2rem;
+}
+
 .container {
     padding-right: 15px;
     padding-left: 15px;
