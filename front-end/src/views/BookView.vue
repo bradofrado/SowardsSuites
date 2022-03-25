@@ -171,6 +171,10 @@ export default {
                 this.getRooms();
             } catch(error) {
                 console.log(error);
+                
+                if (error.response.data.message) {
+                    alert(error.response.data.message);
+                }
             }
             
             console.log(this.days);
