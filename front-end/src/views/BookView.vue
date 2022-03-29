@@ -1,12 +1,38 @@
 <template>
 <div>
-    <h1>Book a Room</h1>
+    <h1 id="booking-top">Book a Room</h1>
     <div class="book-container">
         <div>
             <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
                 :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar" timezone="UTC"/>
+            <p v-if="edit">Editing booking for <a v-b-tooltip.hover title="cancel" href="#booking-top"  @click="onCancelEdit" class="booking-list-date d-inline-flex justify-content-center">
+                    <span class="booking-list-date-value">{{dateFormat(edit.date.start)}}</span>
+                    <span class="flex-shrink-0 m-2">
+                        <svg
+                            class="arrow-svg"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                            />
+                        </svg>
+                        </span>
+                    <span class="booking-list-date-value">{{dateFormat(edit.date.end)}}</span>
+                    <svg
+                        class="m-2 arrow-svg"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        @click.stop="removeDate(date, hidePopover)"
+                        >
+                        <path d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                </a></p>
             <div class="d-flex justify-content-center mt-3">
-                <span class="date-label">{{rangeStart}}</span>
+                <span class="date-label">{{dateFormat(this.range && this.range.start)}}</span>
                 <span class="flex-shrink-0 m-2">
                     <svg
                         class="arrow-svg"
@@ -20,7 +46,7 @@
                         />
                     </svg>
                     </span>
-                <span class="date-label">{{rangeEnd}}</span>
+                <span class="date-label">{{dateFormat(this.range && this.range.end)}}</span>
             </div>
             <div v-b-tooltip.hover :title="bookBtnTooltip">
                 <button :class="'button-primary w-25 center ' + bookBtnClass" @click="onBook" :disabled="bookBtnDisabled">
@@ -35,6 +61,33 @@
             </div>
         </div>
     </div>
+    <div v-if="user">
+        <h1>My Bookings</h1>
+        <div class="booking-list-container" v-for="booking in myBookings" :key="booking.date.start.toDateString()">
+            <div class="booking-list-dates">
+                <a v-b-tooltip.hover title="edit" href="#booking-top"  @click="edit = booking" class="booking-list-date d-flex justify-content-center">
+                    <span class="booking-list-date-value">{{dateFormat(booking.date.start)}}</span>
+                    <span class="flex-shrink-0 m-2">
+                        <svg
+                            class="arrow-svg"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                            />
+                        </svg>
+                        </span>
+                    <span class="booking-list-date-value">{{dateFormat(booking.date.end)}}</span>
+                </a>
+            </div>
+            <div class="booking-list-rooms">
+                <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" :name="room.name"/>
+            </div>
+        </div>
+    </div>
 </div>
 </template>
 
@@ -43,11 +96,13 @@
 import axios from 'axios';
 import moment from 'moment';
 import ImageCheckbox from '@/components/ImageCheckbox.vue'
+import ImageButton from '@/components/ImageButton.vue'
 
 export default {
     name: "BookView",
     components: {
         ImageCheckbox,
+        ImageButton
     },
     data() {
         return {
@@ -62,12 +117,13 @@ export default {
             person: 'Braydon',
             colors: ['blue', 'red', 'orange', 'yellow', 'green', 'teal', 'indigo', 'purple', 'pink', 'gray'],
             calendar: null,
-            loading: false
+            loading: false,
+            edit: null
         }
     },
-    mounted() {
-        this.getRooms();
-        this.getBookings();
+    async mounted() {
+        await this.getRooms();
+        await this.getBookings();
         this.$root.$data.isLoading = false;
     },
     computed: {
@@ -88,6 +144,23 @@ export default {
         },
         selectedRooms() {
             return this.rooms.filter(room => room.active);
+        },
+        myBookings() {
+            const bookings = this.days.filter(day => day.person && day.person.username === this.user.username);
+            //const rooms = this.rooms.filter(room => bookings.rooms.find(x => x._id === room._id));
+            // const rooms = this.rooms.map(room => {
+            //     const currBookings = [];
+            //     bookings.forEach(booking => {
+            //         if (booking.rooms.find(x => x._id === room._id)) {
+            //             currBookings.push(booking);
+            //         }
+            //     })
+
+            //     return {...room, bookings: currBookings};
+            // });
+
+            // return rooms;
+            return bookings
         },
         bookBtnClass() {
             let btnClass = '';
@@ -110,6 +183,23 @@ export default {
             }
 
             return '';
+        }
+    },
+    watch: {
+        edit(edit) {
+            if (edit) {
+                this.range = edit.date;
+                this.rooms = this.rooms.map(room => {
+                    room.active = false;
+                    if (edit.rooms.find(x => x._id === room._id)) {
+                        room.active = true;
+                    }
+
+                    return room;
+                });
+                this.$refs.calendar.focusDate(edit.date.start); 
+                this.$refs.calendar.dragValue = null;
+            } 
         }
     },
     methods: {
@@ -136,11 +226,12 @@ export default {
                     }
 
                     return {
+                        _id: booking._id,
                         date: {
                             start: moment(booking.startDate).toDate(),
                             end: moment(booking.endDate).toDate()
                         },
-                        person: booking.user.firstname,
+                        person: booking.user,
                         rooms: booking.rooms,
                         color: this.currUsers[booking.user.firstname]
                     }
@@ -171,11 +262,21 @@ export default {
 
             try {
                 this.loading = true;
-                await axios.post('/api/bookings', {
-                    start: this.range.start,
-                    end: this.range.end,
-                    rooms: this.selectedRooms.map(x => x._id)
-                });
+                if (this.edit) {
+                    await axios.put('/api/bookings/' + this.edit._id, {
+                        start: this.range.start,
+                        end: this.range.end,
+                        rooms: this.selectedRooms.map(x => x._id)
+                    });
+                    this.edit = null;
+                }
+                else {
+                    await axios.post('/api/bookings', {
+                        start: this.range.start,
+                        end: this.range.end,
+                        rooms: this.selectedRooms.map(x => x._id)
+                    });
+                }
                 await this.getRooms();
                 await this.getBookings();
                 this.range = null;
@@ -192,16 +293,54 @@ export default {
             
             console.log(this.days);
         },
-        onDayClick() {
+        onDayClick(e) {
             if (this.$refs.calendar.isDragging) {
                 this.range = null;
             }
+
+            if (this.edit || !this.$refs.calendar.isDragging) {
+                return;
+            }
+
+            const date = e.date;
+
+            const bookings = this.myBookings.filter(booking => {
+                if (date >= booking.date.start && date <= booking.date.end) {
+                    return true;
+                }
+
+                return false;
+            });
+
+            if (bookings.length) {
+                this.edit = bookings[0];
+            }
             
+        },
+        onCancelEdit() {
+            if (!this.edit) return;
+
+            this.edit = null;
+            this.range = null;
+            this.rooms = this.rooms.map(room => ({...room, active: false}));
         },
         onImageCheckboxClick(id) {
             const room = this.rooms.find(x => x._id === id);
             room.active = !room.active;
             room.activeId = room._id + room.active;
+        },
+        onEdit(booking) {
+            this.range = booking.date;
+            this.edit = booking;
+            this.rooms = this.rooms.map(room => {
+                room.active = false;
+                if (booking.rooms.find(x => x._id === room._id)) {
+                    room.active = true;
+                }
+
+                return room;
+            });
+            this.$refs.calendar.focusDate(booking.date.start);
         },
         getFormat(day) {
             if (!day.person) {
@@ -226,7 +365,7 @@ export default {
                 dates: day.date,
                 bar: day.color,
                 popover: {
-                    label: `${day.person}-${rooms}`
+                    label: `${day.person.firstname}-${rooms}`
                 }
             };
         },
@@ -236,6 +375,9 @@ export default {
             curr = index + 1 < all.length ? all[index+1] : all[0];
 
             return curr
+        },
+        dateFormat(date) {
+            return date ? moment(date).utc().format('MM/DD/YYYY') : ''
         }
     }
 }
@@ -276,4 +418,47 @@ export default {
 svg {
     display: block;
 }
+
+.booking-list-container {
+    display: flex;
+}
+
+.booking-list-rooms {
+    display: flex;
+    justify-content: center;
+    margin: 0 20px;
+}
+
+.booking-list-room {
+    margin: 0 20px 20px 0;
+    width: 100px;
+    height: 100px;
+    font-size: 7px;
+}
+
+.booking-list-dates {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.booking-list-date {
+    margin: 0 5px;
+    border-radius: 10px;
+    border-width: 1px;
+    background-color: #f7fafc;
+    color: inherit;
+    text-decoration: none;
+}
+
+.booking-list-date:hover {
+    cursor: pointer;
+    background-color: #f4f4f4;
+}
+
+.booking-list-date-value {
+    height: 28px;
+    padding: 3px 5px;
+}
+
 </style>

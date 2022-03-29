@@ -48,6 +48,11 @@ bookingSchema.methods.alreadyExists = async function() {
 
     //Now check to see if there are rooms that overlap
     const flag = found.some(booking => {
+        //We don't want this booking to fail with its self
+        if (booking._id.toString() === this._id.toString()) {
+            return false;
+        }
+
         return booking.rooms.some(room => {
             const _flag = this.rooms.find(x => {
                 return room._id.toString() === x._id.toString()
@@ -107,6 +112,56 @@ router.post('/', validUser, checkDate, async (req, res) => {
             user: req.user,
             rooms: req.body.rooms
         });
+         
+        
+
+        if (await booking.alreadyExists()) {
+            return res.status(400).send({
+                message: "One or more rooms is already booked"
+            });
+        }
+
+        await booking.save();
+
+        console.log("sending booking");
+    
+        res.send(booking);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+router.put('/:id', validUser, checkDate, async (req, res) => {
+    try {
+        if (!req.body.rooms || !req.body.end || !req.body.start) {
+            return res.status(400).send({
+                message: "Invalid body parameters"
+            });
+        }
+
+        const booking = await Booking.findOne({
+            _id: req.params.id,
+            user: req.user
+        });
+
+        if (!booking) {
+            return res.status(400).send({
+                message: "Could not find the booking with id " + req.params.id
+            });
+        }
+
+        // const booking = new Booking({
+        //     startDate: req.body.start,
+        //     endDate: req.body.end,
+        //     user: req.user,
+        //     rooms: req.body.rooms
+        // });
+
+        booking.startDate = req.body.start;
+        booking.endDate = req.body.end;
+        booking.user = req.user;
+        booking.rooms = req.body.rooms
          
         
 

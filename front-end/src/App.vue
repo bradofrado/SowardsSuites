@@ -93,7 +93,6 @@ h1 {
 
 button {
     cursor: pointer;
-    border: none;
     border-radius: 5px;
     background-color: #fff;
 }
@@ -104,6 +103,7 @@ button {
     color: #fff;
     /* margin: 1rem 0; */
     font-weight: 500;
+    border: none;
 }
 
 .disabled {

@@ -1,8 +1,11 @@
 <template>
     <div class="image-button-container">
-        <router-link name="image-button" :class="'image-button center-center' + (img ? ' no-color' : '')" :to="to">            
+        <router-link v-if="to" name="image-button" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" :to="to">            
             <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
         </router-link>
+        <div v-else :class="'image-button center-center' + (img ? ' no-color' : '')">
+            <div class="image-button-text center-center" >{{name ? name : ''}}</div>
+        </div>
         <img v-if="img" :src="img">
     </div>
 </template>
@@ -13,7 +16,8 @@ export default {
     props: {
         to: String,
         name: String,
-        img: String
+        img: String,
+        className: String
     }
 }
 </script>
@@ -21,6 +25,7 @@ export default {
 <style scoped>
 img {
     width: 100%;
+    border-radius: 50%;
 }
 
 .image-button-container {
@@ -35,15 +40,15 @@ img {
     color: inherit;
     background-color: #999;
     transition: background-color .3s ease-in-out;
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    height: 100%;
 }
 
 .no-color {
     background-color: rgb(255,255,255,0);
 }
 
-.no-color:hover {
+.no-color.image-hover:hover {
     background-color: rgba(255, 255, 255, .25) !important;
 }
 
@@ -55,23 +60,26 @@ img {
 }
 
 .image-button-text {
-    font-size: 2rem;
+    font-size: 2em;
     color: #fff;
 }
 
-.image-button:hover {
-    
+/* .image-button:hover {
     background-color: rgb(223, 222, 222);
     
     color: inherit;
     cursor: pointer;
+} */
+
+.image-hover:hover {
+    background-color: rgb(223, 222, 222);
     
+    color: inherit;
+    cursor: pointer;
 }
 
 @media only screen and (min-width: 960px) {
-    .image-button, .image-button-container {
-        /* width: 100%;
-        height: 100%; */
+    .image-button-container {
         width: 300px;
         height: 300px;
     }
