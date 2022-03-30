@@ -105,7 +105,7 @@ export default {
                 
                 this.clearAll();
             } catch(error) {
-                console.log(error);
+                //console.log(error);
                 this.$root.$data.user = null;
                 this.$root.$data.isLoading = false;
                 this.error = error.response.data.message;
@@ -125,7 +125,7 @@ export default {
 
                 this.clearAll();
             } catch(error) {
-                console.log(error);
+                //console.log(error);
                 this.$root.$data.user = null;
                 this.$root.$data.isLoading = false;
                 this.error = error.response.data.message;

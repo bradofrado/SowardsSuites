@@ -34,7 +34,7 @@ export default {
                 this.$root.$data.isLoading = false;
                 return true;
             } catch(error) {
-                console.log(error);
+                //console.log(error);
                 return false;
             }
         }

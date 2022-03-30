@@ -211,7 +211,7 @@ export default {
 
                 return true;
             } catch(error) {
-                console.log(error);
+                //console.log(error);
                 this.$root.$data.isLoading = false;
                 return false;
             }
@@ -236,13 +236,11 @@ export default {
                         color: this.currUsers[booking.user.firstname]
                     }
                 });
-                console.log(response.data);
-                console.log(this.days);
-
+                
                 //Have something shown on today
                 this.days.push({date: new Date()});
             } catch(error) {
-                console.log(error);
+                //console.log(error);
             }
             
         },
@@ -282,7 +280,7 @@ export default {
                 this.range = null;
                 this.loading = false;
             } catch(error) {
-                console.log(error);
+                //console.log(error);
                 
                 if (error.response.data.message) {
                     alert(error.response.data.message);
@@ -290,8 +288,6 @@ export default {
 
                 this.loading = false;
             }
-            
-            console.log(this.days);
         },
         onDayClick(e) {
             if (this.$refs.calendar.isDragging) {

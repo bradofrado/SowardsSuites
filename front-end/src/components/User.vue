@@ -25,7 +25,7 @@ export default {
                 await axios.delete('api/users');
                 this.$root.$data.user = null;
             } catch(error) {
-                console.log(error);
+                //console.log(error);
             }
             this.$root.$data.isLoading = false;
         },
