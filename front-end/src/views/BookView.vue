@@ -66,7 +66,7 @@
             </div>
         </div>
     </div>
-    <div v-if="user">
+    <div v-if="user && myBookings.length">
         <h1>My Bookings</h1>
         <div class="booking-list-container" v-for="booking in myBookings" :key="booking.date.start.toDateString()">
             <div class="booking-list-dates">
@@ -423,6 +423,7 @@ svg {
 
 .booking-list-container {
     display: flex;
+    margin-top: 40px;
 }
 
 .booking-list-rooms {
