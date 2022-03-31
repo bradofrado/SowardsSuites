@@ -14,7 +14,7 @@
                 <div class="form-field">
                     <input type='password' placeholder="Password" v-model="password"/>
                 </div>
-                <button type="submit" class="button button-primary" @click.prevent="login">Log in</button>
+                <button type="submit" class="button button-primary h-2" @click.prevent="login">Log in</button>
                 <p class="error-text mt-2 mb-0" v-if="error">{{error}}</p>
                 <a class="mt-1" href="" @click.prevent="toggleLoginView">Sign up</a>
             </form>

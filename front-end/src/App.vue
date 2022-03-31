@@ -104,7 +104,7 @@ button {
     /* margin: 1rem 0; */
     font-weight: 500;
     border: none;
-    max-width: 125px;
+    /* max-width: 125px; */
     border-radius: .25rem;
 }
 
@@ -141,6 +141,10 @@ button {
 
 .ml-0 {
     margin-left: 5px;
+}
+
+.mw-125 {
+    max-width: 125px;
 }
 
 </style>

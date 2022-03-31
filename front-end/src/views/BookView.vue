@@ -49,7 +49,7 @@
             </div>
             <div v-b-tooltip.hover :title="bookBtnTooltip">
                 <div class="center w-50 d-flex">
-                <button :class="'button-primary h-2 ' + bookBtnClass" @click="onBook" :disabled="bookBtnDisabled">
+                <button :class="'button-primary h-2 mw-125 ' + bookBtnClass" @click="onBook" :disabled="bookBtnDisabled">
                     <span v-if="!loading">Book</span>
                     <div v-else class="loader l-small"></div>
                 </button>
