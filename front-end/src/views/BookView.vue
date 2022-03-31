@@ -5,7 +5,7 @@
         <div>
             <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
                 :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar" timezone="UTC"/>
-            <p v-if="edit">Editing booking for <a v-b-tooltip.hover title="cancel" href="#booking-top"  @click="onCancelEdit" class="booking-list-date d-inline-flex justify-content-center">
+            <p v-if="edit">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="booking-list-date d-inline-flex justify-content-center">
                     <span class="booking-list-date-value">{{dateFormat(edit.date.start)}}</span>
                     <span class="flex-shrink-0 m-2">
                         <svg
@@ -26,11 +26,10 @@
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                         stroke-width="2"
-                        @click.stop="removeDate(date, hidePopover)"
                         >
                         <path d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                </a></p>
+                    </svg>
+                </button></p>
             <div class="d-flex justify-content-center mt-3">
                 <span class="date-label">{{dateFormat(this.range && this.range.start)}}</span>
                 <span class="flex-shrink-0 m-2">
@@ -65,7 +64,7 @@
         <h1>My Bookings</h1>
         <div class="booking-list-container" v-for="booking in myBookings" :key="booking.date.start.toDateString()">
             <div class="booking-list-dates">
-                <a v-b-tooltip.hover title="edit" href="#booking-top"  @click="edit = booking" class="booking-list-date d-flex justify-content-center">
+                <button v-b-tooltip.hover title="edit" @click="onEdit(booking)" class="booking-list-date d-flex justify-content-center">
                     <span class="booking-list-date-value">{{dateFormat(booking.date.start)}}</span>
                     <span class="flex-shrink-0 m-2">
                         <svg
@@ -81,7 +80,7 @@
                         </svg>
                         </span>
                     <span class="booking-list-date-value">{{dateFormat(booking.date.end)}}</span>
-                </a>
+                </button>
             </div>
             <div class="booking-list-rooms">
                 <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" :name="room.name"/>
@@ -94,7 +93,7 @@
 <script>
 //import VCalendar from 'v-calendar';
 import axios from 'axios';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import ImageCheckbox from '@/components/ImageCheckbox.vue'
 import ImageButton from '@/components/ImageButton.vue'
 
@@ -135,12 +134,6 @@ export default {
         },
         user() {
             return this.$root.$data.user;
-        },
-        rangeStart() {
-            return this.range && this.range.start ? moment(this.range.start).format('MM/DD/YYYY') : '';
-        },
-        rangeEnd() {
-            return this.range && this.range.end ? moment(this.range.end).format('MM/DD/YYYY') : '';
         },
         selectedRooms() {
             return this.rooms.filter(room => room.active);
@@ -228,8 +221,8 @@ export default {
                     return {
                         _id: booking._id,
                         date: {
-                            start: moment(booking.startDate).toDate(),
-                            end: moment(booking.endDate).toDate()
+                            start: dayjs(booking.startDate).toDate(),
+                            end: dayjs(booking.endDate).toDate()
                         },
                         person: booking.user,
                         rooms: booking.rooms,
@@ -326,17 +319,8 @@ export default {
             room.activeId = room._id + room.active;
         },
         onEdit(booking) {
-            this.range = booking.date;
             this.edit = booking;
-            this.rooms = this.rooms.map(room => {
-                room.active = false;
-                if (booking.rooms.find(x => x._id === room._id)) {
-                    room.active = true;
-                }
-
-                return room;
-            });
-            this.$refs.calendar.focusDate(booking.date.start);
+            window.scrollTo(0,0);
         },
         getFormat(day) {
             if (!day.person) {
@@ -373,7 +357,7 @@ export default {
             return curr
         },
         dateFormat(date) {
-            return date ? moment(date).utc().format('MM/DD/YYYY') : ''
+            return date ? dayjs(date).format('MM/DD/YYYY') : ''
         }
     }
 }
