@@ -5,7 +5,7 @@
         <div>
             <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
                 :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar" timezone="UTC"/>
-            <p v-if="edit">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="booking-list-date d-inline-flex justify-content-center">
+            <p v-if="edit">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="button-secondary rounded d-inline-flex justify-content-center">
                     <span class="booking-list-date-value">{{dateFormat(edit.date.start)}}</span>
                     <span class="flex-shrink-0 m-2">
                         <svg
@@ -48,10 +48,16 @@
                 <span class="date-label">{{dateFormat(this.range && this.range.end)}}</span>
             </div>
             <div v-b-tooltip.hover :title="bookBtnTooltip">
-                <button :class="'button-primary w-25 center ' + bookBtnClass" @click="onBook" :disabled="bookBtnDisabled">
+                <div class="center w-50 d-flex">
+                <button :class="'button-primary h-2 ' + bookBtnClass" @click="onBook" :disabled="bookBtnDisabled">
                     <span v-if="!loading">Book</span>
                     <div v-else class="loader l-small"></div>
                 </button>
+                <button v-if="edit" class="button-secondary w-48 h-2 ml-0" @click="onDelete(edit)">
+                    <span v-if="!loadingDelete">Delete</span>
+                    <div v-else class="loader l-small"></div>
+                </button>
+                </div>
             </div>
         </div>
         <div class="rooms-container">
@@ -64,7 +70,7 @@
         <h1>My Bookings</h1>
         <div class="booking-list-container" v-for="booking in myBookings" :key="booking.date.start.toDateString()">
             <div class="booking-list-dates">
-                <button v-b-tooltip.hover title="edit" @click="onEdit(booking)" class="booking-list-date d-flex justify-content-center">
+                <button v-b-tooltip.hover title="edit" @click="onEdit(booking)" class="button-secondary rounded d-flex justify-content-center">
                     <span class="booking-list-date-value">{{dateFormat(booking.date.start)}}</span>
                     <span class="flex-shrink-0 m-2">
                         <svg
@@ -117,6 +123,7 @@ export default {
             colors: ['blue', 'red', 'orange', 'yellow', 'green', 'teal', 'indigo', 'purple', 'pink', 'gray'],
             calendar: null,
             loading: false,
+            loadingDelete: false,
             edit: null
         }
     },
@@ -158,7 +165,7 @@ export default {
         bookBtnClass() {
             let btnClass = '';
             btnClass += this.bookBtnDisabled ? 'disabled ' : '';
-            //btnClass += this.loading ? 'loader ' : '';
+            btnClass += this.edit ? ' w-48 mr-1' : ' w-100 center ';
             return btnClass;
         },
         bookBtnDisabled() {
@@ -259,7 +266,6 @@ export default {
                         end: this.range.end,
                         rooms: this.selectedRooms.map(x => x._id)
                     });
-                    this.edit = null;
                 }
                 else {
                     await axios.post('/api/bookings', {
@@ -271,6 +277,7 @@ export default {
                 await this.getRooms();
                 await this.getBookings();
                 this.range = null;
+                this.edit = null;
                 this.loading = false;
             } catch(error) {
                 //console.log(error);
@@ -322,6 +329,21 @@ export default {
             this.edit = booking;
             window.scrollTo(0,0);
         },
+        async onDelete(booking) {
+            try {
+                this.loadingDelete = true;
+                await axios.delete('/api/bookings/'+booking._id);
+
+                await this.getRooms();
+                await this.getBookings();
+                this.range = null;
+                this.edit = null;
+                this.loadingDelete = false;
+            } catch(error) {
+                //console.log(error);
+                this.loadingDelete = false;
+            }
+        },
         getFormat(day) {
             if (!day.person) {
                 return {
@@ -357,7 +379,7 @@ export default {
             return curr
         },
         dateFormat(date) {
-            return date ? dayjs(date).format('MM/DD/YYYY') : ''
+            return date ? dayjs.utc(date).format('MM/DD/YYYY') : ''
         }
     }
 }
@@ -422,19 +444,7 @@ svg {
     justify-content: center;
 }
 
-.booking-list-date {
-    margin: 0 5px;
-    border-radius: 10px;
-    border-width: 1px;
-    background-color: #f7fafc;
-    color: inherit;
-    text-decoration: none;
-}
 
-.booking-list-date:hover {
-    cursor: pointer;
-    background-color: #f4f4f4;
-}
 
 .booking-list-date-value {
     height: 28px;

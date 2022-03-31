@@ -147,16 +147,9 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
 
         if (!booking) {
             return res.status(400).send({
-                message: "Could not find the booking with id " + req.params.id
+                message: "Either could not find booking with id " + req.params.id + " or invalid user"
             });
         }
-
-        // const booking = new Booking({
-        //     startDate: req.body.start,
-        //     endDate: req.body.end,
-        //     user: req.user,
-        //     rooms: req.body.rooms
-        // });
 
         booking.startDate = req.body.start;
         booking.endDate = req.body.end;
@@ -176,6 +169,28 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
         console.log("sending booking");
     
         res.send(booking);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+router.delete('/:id', validUser, async (req, res) => {
+    try {
+        const booking = await Booking.findOne({
+            _id: req.params.id,
+            user: req.user
+        });
+
+        if (!booking) {
+            return res.status(400).send({
+                message: "Either could not find booking with id " + req.params.id + " or invalid user"
+            });
+        }
+
+        await booking.delete();
+
+        res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

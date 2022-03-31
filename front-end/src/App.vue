@@ -99,16 +99,48 @@ button {
 
 .button-primary {
     background-color: #0f8aa0;
-    height: 2.5rem;
+    /* height: 2.5rem; */
     color: #fff;
     /* margin: 1rem 0; */
     font-weight: 500;
     border: none;
+    max-width: 125px;
+    border-radius: .25rem;
+}
+
+.button-primary:hover {
+    background-color: #19798a;
+}
+
+.button-secondary {
+    /* margin: 0 5px; */
+    border-radius: 0.25rem;
+    border-width: 1px;
+    background-color: #f7fafc;
+    color: inherit;
+    text-decoration: none;
+    min-height: 28px;
+}
+
+.button-secondary:hover {
+    background-color: #f4f4f4;
 }
 
 .disabled {
     opacity: .7;
     cursor: default;
+}
+
+.h-2 {
+    height: 2.5rem;
+}
+
+.w-48 {
+    width: 48% !important;
+}
+
+.ml-0 {
+    margin-left: 5px;
 }
 
 </style>
