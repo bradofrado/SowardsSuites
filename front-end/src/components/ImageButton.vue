@@ -42,6 +42,7 @@ img {
     transition: background-color .3s ease-in-out;
     width: 100%;
     height: 100%;
+    white-space: nowrap;
 }
 
 .no-color {

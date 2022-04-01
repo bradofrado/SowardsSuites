@@ -5,7 +5,7 @@
         <div>
             <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
                 :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar" timezone="UTC"/>
-            <p v-if="edit">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="button-secondary rounded d-inline-flex justify-content-center">
+            <p v-if="edit" class="text-center">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="button-secondary rounded d-inline-flex justify-content-center">
                     <span class="booking-list-date-value">{{dateFormat(edit.date.start)}}</span>
                     <span class="flex-shrink-0 m-2">
                         <svg
@@ -388,13 +388,14 @@ export default {
 <style scoped>
 .book-container {
     display: flex;
-    margin-top: 20px;
+    margin: 20px 0;
+    flex-direction: column;
 }
 
 .rooms-container {
     display: flex;
     flex-wrap: wrap;
-    padding-left: 20px;
+    padding-left: 10px;
 }
 
 .center {
@@ -424,19 +425,20 @@ svg {
 .booking-list-container {
     display: flex;
     margin-top: 40px;
+    flex-direction: column;
 }
 
 .booking-list-rooms {
     display: flex;
-    justify-content: center;
     margin: 0 20px;
+    flex-wrap: wrap;
 }
 
 .booking-list-room {
-    margin: 0 20px 20px 0;
-    width: 100px;
-    height: 100px;
-    font-size: 7px;
+    margin: 20px 5px;
+    width: 90px;
+    height: 90px;
+    font-size: 0.5rem;
 }
 
 .booking-list-dates {
@@ -452,4 +454,24 @@ svg {
     padding: 3px 5px;
 }
 
+@media only screen and (min-width: 960px) {
+   .book-container {
+       flex-direction: row;
+   }
+
+   .rooms-container {
+       padding-left: 20px;
+   }
+
+   .booking-list-container {
+       flex-direction: row;
+   }
+
+   .booking-list-room {
+        margin: 0 20px 20px 0;
+        width: 100px;
+        height: 100px;
+        font-size: 7px;
+    }
+}
 </style>

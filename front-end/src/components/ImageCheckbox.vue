@@ -48,8 +48,8 @@ img {
 }
 
 .image-button-container {
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     margin: 10px;
     position: relative;
     border-width: 1px;
@@ -99,13 +99,9 @@ img {
 }
 
 @media only screen and (min-width: 960px) {
-    /* .image-button, .image-button-container {
-        width: 300px;
-        height: 300px;
-    }
-
     .image-button-container {
-        margin: 10px;
-    } */
+        width: 100px;
+        height: 100px;
+    }
 }
 </style>
