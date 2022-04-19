@@ -6,7 +6,7 @@
             reserve your favorite, limited offer room.</p>
         <p>Navigate over to the Rooms page to see all of the possible rooms. (Yes even the Lemperholes' room can be reserved.
             Shh, don't tell them!) Upon clicking on the room you will find information about the room and lovely pictures.
-            You can see the availablity and book the room their, or you can navigate over to the Book tab and see what is available
+            You can see the availablity and book the room there, or you can navigate over to the Book tab and see what is available
             based on a specific date.</p>
         <p>We hope you will enjoy your stay here at the Sowards' Suite. We know Mamma Llamma will for sure.</p>
     </div>
