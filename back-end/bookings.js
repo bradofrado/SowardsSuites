@@ -65,6 +65,12 @@ bookingSchema.methods.alreadyExists = async function() {
     return flag;
 }
 
+bookingSchema.methods.isValid = function() {
+    const now = new Date();
+
+    return this.endDate >= now;
+}
+
 const Booking = mongoose.model('Booking', bookingSchema);
 
 
@@ -81,13 +87,30 @@ const checkDate = async (req, res, next) => {
     req.body.start = req.body.start.substring(0,req.body.start.indexOf('T'));
     req.body.end = req.body.end.substring(0,req.body.end.indexOf('T'));
 
+    //Make sure the date is not in the past
+    const start = new Date(req.body.start);
+    const end = new Date(req.body.end);
+    if (start > end || start < new Date() || end < new Date()) {
+        return res.status(400).send({
+            message: "Invalid dates"
+        });
+    }
+
     next();
 }
 
 router.get('/', async (req, res) => {
     try {
-        Booking.find().populate('rooms').populate('user').exec((err, bookings) => {
+        Booking.find().populate('rooms').populate('user').exec(async (err, bookings) => {
             if (err) throw err;
+
+            //Git rid of the dates that are passed their bookings
+            for (let i = bookings.length - 1; i >= 0; i--) {
+                if (!bookings[i].isValid()) {
+                    await bookings[i].delete();
+                    bookings.splice(i);
+                }
+            }
 
             console.log(bookings);
             res.send(bookings);
