@@ -26,18 +26,33 @@ bookingSchema.methods.alreadyExists = async function() {
     const found = await Booking.find(
         {
        $or: [
+           //The new start date is in between an existing booking
            {
                startDate: {
-                   $gte: this.startDate,
-                   $lte: this.endDate
+                   $lte: this.startDate
+               },
+               endDate: {
+                   $gte: this.startDate
                }
            },
+           //The new end date is in between an existing booking
            {
-               endDate: {
-                   $gte: this.startDate,
-                   $lte: this.endDate
-               }
-           }
+                startDate: {
+                    $lte: this.endDate
+                },
+                endDate: {
+                    $gte: this.endDate
+                }
+           },
+           //An existing booking is in between a new booking
+           {
+                startDate: {
+                    $gte: this.startDate
+                },
+                endDate: {
+                    $lte: this.endDate
+                }
+            }
        ]
     });
 
@@ -83,9 +98,6 @@ const checkDate = async (req, res, next) => {
             message: "Invalid body parameters"
         }); 
     }
-
-    req.body.start = req.body.start.substring(0,req.body.start.indexOf('T'));
-    req.body.end = req.body.end.substring(0,req.body.end.indexOf('T'));
 
     //Make sure the date is not in the past
     const start = new Date(req.body.start);

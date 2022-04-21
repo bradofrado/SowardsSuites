@@ -4,7 +4,7 @@
     <div class="book-container">
         <div>
             <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
-                :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar" timezone="UTC"/>
+                :columns="$screens({ default: 1, lg: 2 })" @dayclick="onDayClick" ref="calendar"/>
             <p v-if="edit" class="text-center">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="button-secondary rounded d-inline-flex justify-content-center">
                     <span class="booking-list-date-value">{{dateFormat(edit.date.start)}}</span>
                     <span class="flex-shrink-0 m-2">
@@ -147,19 +147,7 @@ export default {
         },
         myBookings() {
             const bookings = this.days.filter(day => day.person && day.person.username === this.user.username);
-            //const rooms = this.rooms.filter(room => bookings.rooms.find(x => x._id === room._id));
-            // const rooms = this.rooms.map(room => {
-            //     const currBookings = [];
-            //     bookings.forEach(booking => {
-            //         if (booking.rooms.find(x => x._id === room._id)) {
-            //             currBookings.push(booking);
-            //         }
-            //     })
-
-            //     return {...room, bookings: currBookings};
-            // });
-
-            // return rooms;
+            
             return bookings
         },
         bookBtnClass() {
@@ -228,8 +216,9 @@ export default {
                     return {
                         _id: booking._id,
                         date: {
-                            start: dayjs(booking.startDate).toDate(),
-                            end: dayjs(booking.endDate).toDate()
+                            //The back-end is in utc time, so use that
+                            start: dayjs.utc(booking.startDate).toDate(),
+                            end: dayjs.utc(booking.endDate).toDate()
                         },
                         person: booking.user,
                         rooms: booking.rooms,
@@ -260,17 +249,21 @@ export default {
 
             try {
                 this.loading = true;
+
+                //Make the time the end of day of the local time, then convert that to utc (back-end is in utc time)
+                const start = dayjs.utc(this.range.start.setHours(23, 59, 59, 999));
+                const end = dayjs(this.range.end.setHours(23, 59, 59, 999));
                 if (this.edit) {
                     await axios.put('/api/bookings/' + this.edit._id, {
-                        start: this.range.start,
-                        end: this.range.end,
+                        start: start,
+                        end: end,
                         rooms: this.selectedRooms.map(x => x._id)
                     });
                 }
                 else {
                     await axios.post('/api/bookings', {
-                        start: this.range.start,
-                        end: this.range.end,
+                        start: start,
+                        end: end,
                         rooms: this.selectedRooms.map(x => x._id)
                     });
                 }
@@ -298,7 +291,7 @@ export default {
                 return;
             }
 
-            const date = e.date;
+            const date = e.date.setHours(23, 59, 59, 999);
 
             const bookings = this.myBookings.filter(booking => {
                 if (date >= booking.date.start && date <= booking.date.end) {
@@ -379,7 +372,7 @@ export default {
             return curr
         },
         dateFormat(date) {
-            return date ? dayjs.utc(date).format('MM/DD/YYYY') : ''
+            return date ? dayjs(date).format('MM/DD/YYYY') : ''
         }
     }
 }
