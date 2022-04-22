@@ -9,10 +9,10 @@ const userSchema = new mongoose.Schema({
     password: String,
     firstname: String,
     lastname: String,
-    role: {
+    roles: [{
         type: String,
         default: ""
-    }
+    }]
 });
 
 userSchema.pre('save', async function(next) {
@@ -47,7 +47,7 @@ userSchema.methods.toJSON = function() {
 const User = mongoose.model('User', userSchema);
 
 /* Middleware */
-const validUser = async (req, res, next) => {
+const validUserRoles = async (req, res, next, roles) => {
     if (!req.session.userID)
     {
         return res.status(403).send({
@@ -59,11 +59,24 @@ const validUser = async (req, res, next) => {
         const user = await User.findOne({
             _id: req.session.userID 
         });
+
         if (!user) {
             return res.status(403).send({
                 message: "not logged in"
             });
         }
+
+        if (roles) {
+            for (let i = 0; i < roles.length; i++) {
+                const role = roles[i];
+                if (user && !user.roles.includes(role)) {
+                    return res.status(403).send({
+                        message: "Must have role " + role + " to perform this feature"
+                    });
+                }
+            }
+        }
+        
 
         req.user = user;
     } catch (error) {
@@ -73,6 +86,20 @@ const validUser = async (req, res, next) => {
     }
 
     next();
+}
+
+const validUser = function(roles) {
+    //valid user used normally without roles (req, res, next  as arguments)
+    if (arguments.length === 3) {
+        return validUserRoles.apply(this, arguments);
+    }
+
+    //Called with roles
+    return function() {
+        arguments[arguments.length] = roles;
+        arguments.length += 1;
+        return validUserRoles.apply(this, arguments);
+    }
 }
 
 /* Endpoints */

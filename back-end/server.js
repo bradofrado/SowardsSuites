@@ -1,8 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const multer = require('multer');
-const fs = require('fs');
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,21 +29,6 @@ app.use(cookieSession({
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
-
-const upload = multer({
-    dest: root + '/images/',
-    limits: {
-        fileSize: 10000000
-    }
-});
-
-const deletePhoto = function(path) {
-    const url = `${root}${path}`;
-
-    console.log("Removing photo at " + path);
-    fs.unlinkSync(url);
-    console.log("File removed:", url);
-}
 
 const users = require("./users.js");
 const rooms = require("./rooms.js");

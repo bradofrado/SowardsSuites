@@ -3,6 +3,9 @@
         <router-link v-if="to" name="image-button" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" :to="to">            
             <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
         </router-link>
+        <button v-else-if="hasClick" name="image-button" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" @click="onClick">            
+            <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
+        </button>
         <div v-else :class="'image-button center-center' + (img ? ' no-color' : '')">
             <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </div>
@@ -18,6 +21,16 @@ export default {
         name: String,
         img: String,
         className: String
+    },
+    computed: {
+        hasClick() {
+            return this.$listeners && this.$listeners.click;
+        }
+    },
+    methods: {
+        onClick() {
+            this.$emit('click');
+        }
     }
 }
 </script>

@@ -7,24 +7,31 @@
                     <div v-for="room in getRoomInRow(rowNum)" class="grid-item" :key="room._id">
                         <ImageButton :to="`/rooms/${room._id}`" :name="room.name" :img="room.thumbnail"/>
                     </div>
+                    <div v-if="rowNum == numRows && isAdmin" class="grid-item">
+                        <ImageButton @click="onAddRoomClick" name="Add Room" /> 
+                    </div>
                 </div>                
             </template>
         </div>
+        <uploader :show="show" @close="close" @uploadFinished="uploadFinished" />
     </div>
 </template>
 
 <script>
 import ImageButton from "@/components/ImageButton.vue"
+import Uploader from "@/components/Uploader.vue"
 import axios from 'axios'
 
 export default {
     name: "RoomsView",
     components: {
-        ImageButton
+        ImageButton,
+        Uploader
     },
     data() {
         return {
-            rooms: []
+            rooms: [],
+            show: false
         }
     },
     created(){
@@ -51,12 +58,31 @@ export default {
 
             const rooms =  this.rooms.slice((rowNum - 1) * 3, rowNum * 3);
             return rooms;
+        },
+        onAddRoomClick() {
+            if (!this.isAdmin) {
+                return;
+            }
+
+            this.show = true;
+        },
+        close() {
+            this.show = false;
+        },
+        async uploadFinished() {
+            this.show = false;
+            await this.getRooms();
         }
     },
     computed: {
         numRows() {
             const numRows = Math.ceil(this.rooms.length / 3);
             return numRows;
+        },
+        isAdmin() {
+            const user = this.$root.$data.user;
+
+            return user && user.roles.includes("Admin");
         }
     },
 }
