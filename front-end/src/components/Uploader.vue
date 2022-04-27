@@ -1,7 +1,8 @@
 <template>
 <div>
     <form class="pure-form" @submit.prevent="upload">
-        <legend>Add a Room</legend>
+        <legend v-if="room">Edit {{room.name}}</legend>
+        <legend v-else>Add a Room</legend>
         <fieldset>
             <input v-model="name" placeholder="Name">
         </fieldset>
@@ -10,8 +11,8 @@
         </fieldset>
         <fieldset>
             <div class="imageInputContainer">
-                <file-input title="Choose an Image" @onUpload="onImageUpload"/>
-                <file-input title="Choose a Thumbnail" @onUpload="onThumbnailUpload"/>
+                <file-input :url="image" title="Choose an Image" @onUpload="onImageUpload"/>
+                <file-input :url="thumbnail" title="Choose a Thumbnail" @onUpload="onThumbnailUpload"/>
             </div>
             <p v-if="error" class="error">{{error}}</p>
         </fieldset>
@@ -29,6 +30,9 @@ import FileInput from "@/components/FileInput.vue"
 
 export default {
     name: 'Uploader',
+    props: {
+        room: Object
+    },
     components: {
         FileInput
     },
@@ -36,40 +40,62 @@ export default {
         return {
             name: '',
             description: '',
-            url: '',
             image: null,
             thumbnail: null,
             error: '',
         }
     },
+    created() {
+        this.name = this.$props.room ? this.$props.room.name : '';
+        this.description = this.$props.room ? this.$props.room.description : '';
+        this.image = this.$props.room ? this.$props.room.image : '';
+        this.thumbnail = this.$props.room ? this.$props.room.thumbnail : '';
+    },
     methods: {
-    onImageUpload(image) {
-        this.image = image;
-    },
-    onThumbnailUpload(thumbnail) {
-        this.thumbnail = thumbnail;
-    },
-    close() {
-        this.$emit('close');
-    },
-    async upload() {
-        try {
-            const formData = new FormData();
-            formData.append('image', this.image, this.image.name);
-            formData.append('thumbnail', this.thumbnail, this.thumbnail.name);
-            formData.append('name', this.name);
-            formData.append('description', this.description);
-            await axios.post("/api/rooms", formData);
-            this.thumbnail = null;
-            this.image = null;
-            this.url = "";
-            this.name = "";
-            this.description = "";
-            this.$emit('uploadFinished');
-        } catch (error) {
-            console.log(error);
-            this.error = "Error: " + error.response.data.message;
-        }
+        onImageUpload(image) {
+            this.image = image;
+        },
+        onThumbnailUpload(thumbnail) {
+            this.thumbnail = thumbnail;
+        },
+        close() {
+            this.$emit('close');
+        },
+        async upload() {
+            try {
+                if (!this.image || !this.thumbnail || !this.name || !this.description) {
+                    this.error = "Please fill out all fields";
+                    return;
+                }
+
+                const formData = new FormData();
+                console.log(this.image);
+
+                if (typeof this.image !== 'string')
+                    formData.append('image', this.image, this.image.name);
+                if (typeof this.thumbnail !== 'string')
+                    formData.append('thumbnail', this.thumbnail, this.thumbnail.name);
+                formData.append('name', this.name);
+                formData.append('description', this.description);
+
+                const room = this.$props.room;
+
+                if (room) {
+                    await axios.put('/api/rooms/' + room._id, formData);
+                }
+                else {
+                    await axios.post("/api/rooms", formData);
+                }
+
+                this.thumbnail = null;
+                this.image = null;
+                this.name = "";
+                this.description = "";
+                this.$emit('uploadFinished');
+            } catch (error) {
+                console.log(error);
+                this.error = "Error: " + error.response.data.message;
+            }
         }
     }
 }

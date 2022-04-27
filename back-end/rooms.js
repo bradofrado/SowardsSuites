@@ -46,14 +46,56 @@ router.get('/', async (req, res) => {
     }
 });
 const roomUpload = upload.fields([{name: 'image', maxCount: 1}, {name: 'thumbnail', maxCount: 1}]);
+
 router.post('/', validUser(['Admin']), roomUpload, async (req, res) => {
     try {
+        if (!req.body.name || !req.body.description) {
+            return res.status(400).send({
+                message: "Invalid body parameters"
+            });
+        }
+
         const room = new Room({
             name: req.body.name,
             image: '/images/' + req.files['image'][0].filename,
             thumbnail: '/images/' + req.files['thumbnail'][0].filename,
             description: req.body.description
         });
+
+        await room.save();
+
+        return res.send(room);
+    } catch(error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+})
+
+router.put('/:id', validUser(['Admin']), roomUpload, async (req, res) => {
+    try {
+        if (!req.body.name || !req.body.description) {
+            return res.status(400).send({
+                message: "Invalid body parameters"
+            });
+        }
+
+        const room = await Room.findOne({ 
+            _id: req.params.id
+        });
+
+        if (!room) {
+            return res.status(400).send({
+                message: "Could not find room " + req.params.id
+            });
+        }
+
+        room.name = req.body.name;
+
+        if (req.files && req.files['image'])
+            room.image = '/images/' + req.files['image'][0].filename;
+        if (req.files && req.files['thumbnail'])
+            room.thumbnail = '/images/' + req.files['thumbnail'][0].filename;
+        room.description = req.body.description;
 
         await room.save();
 
