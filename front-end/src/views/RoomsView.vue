@@ -5,7 +5,17 @@
             <template v-for="rowNum in numRows">
                 <div class="grid-row" :key="rowNum">
                     <div v-for="room in getRoomInRow(rowNum)" class="grid-item" :key="room._id">
-                        <ImageButton :to="`/rooms/${room._id}`" :name="room.name" :img="room.thumbnail"/>
+                        <context-menu :on="isAdmin">
+                            <ImageButton :to="`/rooms/${room._id}`" :name="room.name" :img="room.thumbnail"/>
+                            <template v-slot:items>
+                                <context-menu-item @click="onEdit(room)">
+                                    Edit Room
+                                </context-menu-item>
+                                <context-menu-item @click="onAddRoomClick">
+                                    Add Room
+                                </context-menu-item>
+                            </template>
+                        </context-menu>
                     </div>
                     <div v-if="rowNum == numRows && isAdmin" class="grid-item">
                         <ImageButton @click="onAddRoomClick" name="Add Room" /> 
@@ -14,7 +24,7 @@
             </template>
         </div>
         <Modal :show="show">
-            <uploader @close="close" @uploadFinished="uploadFinished" />
+            <uploader :room="editRoom" @close="close" @uploadFinished="uploadFinished" />
         </Modal>
     </div>
 </template>
@@ -24,18 +34,23 @@ import ImageButton from "@/components/ImageButton.vue"
 import Uploader from "@/components/Uploader.vue"
 import Modal from "@/components/Modal.vue"
 import axios from 'axios'
+import ContextMenu from '../components/ContextMenu.vue'
+import ContextMenuItem from '../components/ContextMenuItem.vue'
 
 export default {
     name: "RoomsView",
     components: {
         ImageButton,
         Uploader,
-        Modal
+        Modal,
+        ContextMenu,
+        ContextMenuItem,
     },
     data() {
         return {
             rooms: [],
-            show: false
+            show: false,
+            editRoom: null
         }
     },
     created(){
@@ -64,11 +79,7 @@ export default {
             return rooms;
         },
         onAddRoomClick() {
-            if (!this.isAdmin) {
-                return;
-            }
-
-            this.show = true;
+            this.onEdit(null);
         },
         close() {
             this.show = false;
@@ -76,6 +87,14 @@ export default {
         async uploadFinished() {
             this.show = false;
             await this.getRooms();
+        },
+        onEdit(room) {
+            if (!this.isAdmin) {
+                return;
+            }
+            
+            this.editRoom = room;
+            this.show = true;
         }
     },
     computed: {
