@@ -13,20 +13,24 @@
                 </div>                
             </template>
         </div>
-        <uploader :show="show" @close="close" @uploadFinished="uploadFinished" />
+        <Modal :show="show">
+            <uploader @close="close" @uploadFinished="uploadFinished" />
+        </Modal>
     </div>
 </template>
 
 <script>
 import ImageButton from "@/components/ImageButton.vue"
 import Uploader from "@/components/Uploader.vue"
+import Modal from "@/components/Modal.vue"
 import axios from 'axios'
 
 export default {
     name: "RoomsView",
     components: {
         ImageButton,
-        Uploader
+        Uploader,
+        Modal
     },
     data() {
         return {

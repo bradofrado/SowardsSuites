@@ -1,14 +1,12 @@
 <template>
-<transition v-if="show" name="modal">
-  <div class="modal-mask">
-    <div class="modal-container">
-      <form class="pure-form" @submit.prevent="upload">
+<div>
+    <form class="pure-form" @submit.prevent="upload">
         <legend>Add a Room</legend>
         <fieldset>
-          <input v-model="name" placeholder="Name">
+            <input v-model="name" placeholder="Name">
         </fieldset>
         <fieldset>
-          <textarea v-model="description" placeholder="Description"></textarea>
+            <textarea v-model="description" placeholder="Description"></textarea>
         </fieldset>
         <fieldset>
             <div class="imageInputContainer">
@@ -18,23 +16,19 @@
             <p v-if="error" class="error">{{error}}</p>
         </fieldset>
         <fieldset class="buttons">
-          <button type="button" @click="close" class="button button-secondary">Close</button>
-          <button type="submit" class="button button-primary">Upload</button>
+            <button type="button" @click="close" class="button button-secondary">Close</button>
+            <button type="submit" class="button button-primary">Upload</button>
         </fieldset>
-      </form>
-    </div>
-  </div>
-</transition>
+    </form>
+</div>
 </template>
 
 <script>
 import axios from 'axios';
 import FileInput from "@/components/FileInput.vue"
+
 export default {
     name: 'Uploader',
-    props: {
-        show: Boolean,
-    },
     components: {
         FileInput
     },
