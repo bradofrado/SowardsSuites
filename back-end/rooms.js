@@ -36,7 +36,7 @@ const Room = mongoose.model('Room', roomSchema);
 const users = require('./users.js');
 const validUser = users.valid;
 
-router.get('/', validUser, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         let rooms = await Room.find();
         res.send(rooms);
