@@ -104,6 +104,35 @@ router.put('/:id', validUser(['Admin']), roomUpload, async (req, res) => {
         console.log(error);
         return res.sendStatus(500);
     }
+});
+
+router.delete('/:id', validUser(['Admin']), async (req, res) => {
+    try {
+        const room = await Room.findOne({
+            _id: req.params.id
+        });
+
+        if (!room) {
+            return res.status(400).send({
+                message: "Either could not find room with id " + req.params.id
+            });
+        }
+
+        if (room.image) {
+            deletePhoto(room.image);
+        }
+
+        if (room.thumbnail) {
+            deletePhoto(room.thumbnail);
+        }
+
+        await room.delete();
+
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 })
 
 module.exports = {

@@ -102,13 +102,18 @@ export default {
             this.editRoom = room;
             this.show = true;
         },
-        onDelete(room) {
+        async onDelete(room) {
             if (!this.isAdmin) {
                 return;
             }
             
-            this.editRoom = room;
-            this.show = true;
+            try {
+                await axios.delete('/api/rooms/' + room._id);
+
+                await this.getRooms();
+            } catch(error) {
+                console.log(error);
+            }
         }
     },
     computed: {
