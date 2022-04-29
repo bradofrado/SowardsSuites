@@ -12,8 +12,9 @@ export default {
     },
     methods: {
         onClick() {
-            this.$parent.close();
+            console.log('parent');
             this.$emit('click');
+            this.$parent.close();
         }
     }
 }

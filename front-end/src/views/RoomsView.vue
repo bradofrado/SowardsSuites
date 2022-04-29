@@ -11,6 +11,9 @@
                                 <context-menu-item @click="onEdit(room)">
                                     Edit Room
                                 </context-menu-item>
+                                <context-menu-item>
+                                    <button-confirm @confirm="onDelete(room)" message="Are you sure you want to delete this room?">Delete Room</button-confirm>
+                                </context-menu-item>
                                 <context-menu-item @click="onAddRoomClick">
                                     Add Room
                                 </context-menu-item>
@@ -24,18 +27,20 @@
             </template>
         </div>
         <Modal :show="show">
-            <uploader :room="editRoom" @close="close" @uploadFinished="uploadFinished" />
+            <Uploader :room="editRoom" @close="close" @uploadFinished="uploadFinished" />
         </Modal>
     </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 import ImageButton from "@/components/ImageButton.vue"
 import Uploader from "@/components/Uploader.vue"
 import Modal from "@/components/Modal.vue"
-import axios from 'axios'
-import ContextMenu from '../components/ContextMenu.vue'
-import ContextMenuItem from '../components/ContextMenuItem.vue'
+import ContextMenu from '@/components/ContextMenu.vue'
+import ContextMenuItem from '@/components/ContextMenuItem.vue'
+import ButtonConfirm from '@/components/ButtonConfirm.vue'
 
 export default {
     name: "RoomsView",
@@ -45,6 +50,7 @@ export default {
         Modal,
         ContextMenu,
         ContextMenuItem,
+        ButtonConfirm
     },
     data() {
         return {
@@ -89,6 +95,14 @@ export default {
             await this.getRooms();
         },
         onEdit(room) {
+            if (!this.isAdmin) {
+                return;
+            }
+            
+            this.editRoom = room;
+            this.show = true;
+        },
+        onDelete(room) {
             if (!this.isAdmin) {
                 return;
             }

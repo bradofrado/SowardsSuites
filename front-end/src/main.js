@@ -32,7 +32,7 @@ let data = {
 new Vue({
   router,
   data,
-  render: h => h(App),
+  render: h => h(App, {ref: 'app'}),
   watch: {
     '$route': function() {
       this.$root.$data.isLoading = true;

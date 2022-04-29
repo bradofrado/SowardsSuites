@@ -61,10 +61,13 @@ export default {
             this.top = top + 'px';
             this.left = left + 'px';
         },
-        close() {
-            this.show = false;
-            this.top = '0px';
-            this.left = '0px';
+        close() {  
+            setTimeout(() => {
+                this.show = false;
+            }, 50);     
+            Vue.nextTick(function() {
+               //this.setMenu(0,0);               
+            }.bind(this));
         }
     }
 }

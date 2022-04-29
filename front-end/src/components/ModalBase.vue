@@ -1,37 +1,42 @@
 <template>
-<div v-if="show">
-    <slot></slot>
-</div>
+<transition v-if="show" name="modal">
+  <div class="modal-mask">
+    <div class="modal-container">
+        <div ref='container'></div>
+    </div>
+  </div>
+</transition>
 </template>
 
 <script>
-// import Vue from 'vue'
-// import Uploader from '@/components/Uploader.vue'
-
 export default {
     name: 'Modal',
-    props: {
-        show: Boolean,
-    },
     data() {
         return {
-            modal: null
+            show: false,
+            children: []
         }
     },
-    watch: {
-        show(show) {
-            if (show) {
-                // const ComponentClass = Vue.extend(Uploader);
-                // const instance = new ComponentClass();
-                // instance.$mount();
-                // this.$root.$refs.app.$refs.modal(instance.$el);
-                this.$root.$refs.app.$refs.modal.showModal(this.$slots.default);
-            }
-            else {
-                this.$root.$refs.app.$refs.modal.hideModal();
-            }
+    methods: {
+        showModal(children) {
+            //We have to set it to false, then true in case there is already a modal showing
+            //to clear the contents
+            this.show = false;
+            this.$nextTick(function() {
+                this.show = true;
+                this.$nextTick(function() {
+                    //The children passed in are VNodes
+                    children.forEach(child => {
+                        this.$refs.container.appendChild(child.elm);
+                    })
+                }.bind(this))
+               
+            }.bind(this));
+        },
+        hideModal() {
+            this.show = false;
         }
-    }
+    },
 }
 </script>
 

@@ -1,4 +1,5 @@
 <template>
+<div>
     <div id="app">
         <Header/>
         <div id="myApp" class="container">
@@ -6,7 +7,10 @@
             <router-view/>
         </div>
         <Footer/>
+        
     </div>
+    <modal-base ref='modal'></modal-base>
+</div>
 </template>
 
 <script>
@@ -14,12 +18,16 @@ import Header from "@/components/Header.vue"
 import Footer from "@/components/Footer.vue"
 import LoadingBar from "@/components/LoadingBar.vue"
 import axios from 'axios'
+import ModalBase from './components/ModalBase.vue'
+//import ModalBase from './components/ModalBase.vue'
 
 export default {
     components: {
         Header,
         Footer,
-        LoadingBar
+        LoadingBar,
+        ModalBase,
+        //ModalBase
     },
     async created() {
         try {
