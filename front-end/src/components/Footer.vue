@@ -1,7 +1,7 @@
 <template>
 <div id="footer">
     <div class="footer-bottom">
-        ALL CONTENT COPYRIGHT #169 2022 Sowards Suites
+        ALL CONTENT COPYRIGHT &#169; 2022 Sowards Suites
     </div>
     <div class="icons-container">
         <a class="icon" href="https://www.instagram.com/bradofrado/" target="_blank">

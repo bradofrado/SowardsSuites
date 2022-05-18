@@ -12,7 +12,7 @@
                                     Edit Room
                                 </context-menu-item>
                                 <context-menu-item>
-                                    <button-confirm @confirm="onDelete(room)" message="Are you sure you want to delete this room?">Delete Room</button-confirm>
+                                    <button-confirm class="context-item-delete" @confirm="onDelete(room)" message="Are you sure you want to delete this room?">Delete Room</button-confirm>
                                 </context-menu-item>
                                 <context-menu-item @click="onAddRoomClick">
                                     Add Room
@@ -138,6 +138,11 @@ export default {
 
 .grid-item {
     display: flex;
+}
+
+.context-item-delete {
+    background-color: transparent;
+    padding: 0;
 }
 
 @media only screen and (min-width: 960px) {

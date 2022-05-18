@@ -81,7 +81,7 @@ export default {
     outline: none;
     cursor: pointer;
     width: 250px;
-    padding:10px 0px;
+    padding: 10px 20px;
     margin:0px;
     border-width: 1px;
     border-radius: 5px;

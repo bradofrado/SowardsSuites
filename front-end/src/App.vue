@@ -105,6 +105,11 @@ button {
     background-color: #fff;
 }
 
+.button {
+    min-height: 40px;
+    min-width: 75px;
+}
+
 .button-primary {
     background-color: #0f8aa0;
     /* height: 2.5rem; */

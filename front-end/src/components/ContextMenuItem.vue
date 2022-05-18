@@ -24,4 +24,8 @@ export default {
 .context-item:hover {
     background-color: #999;
 }
+
+.context-item {
+    margin: 5px 0px;
+}
 </style>

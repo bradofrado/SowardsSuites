@@ -1,12 +1,14 @@
 <template>
-<div>
-    <button v-bind="$attrs" @click="onClick"><slot></slot></button>
+<button @click="onClick">
+    <slot></slot>
     <Modal :show="show">
         <h4>{{message}}</h4>
-        <button class="button button-secondary" @click="onCancel">{{cancelText}}</button>
-        <button class="button button-primary" @click="onConfirm">{{confirmText}}</button>
+        <div class="buttons-container">
+            <button class="button button-secondary footer-button" @click="onCancel">{{cancelText}}</button>
+            <button class="button button-primary footer-button" @click="onConfirm">{{confirmText}}</button>
+        </div>
     </Modal>
-</div>
+</button>
 </template>
 
 <script>
@@ -14,7 +16,8 @@ import Modal from '@/components/Modal.vue'
 
 
 export default {
-  components: { Modal },
+    components: { Modal },
+    inheritAttrs: false,
     name: "ButtonConfirm",
     props: {
         message: String,
@@ -33,6 +36,9 @@ export default {
             e: null
         }
     },
+    created() {
+        console.log(this.$attrs);
+    },
     methods: {
         onClick(e) {
             this.show = true;
@@ -50,3 +56,15 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.buttons-container {
+    display: flex;
+    justify-content: right;
+    margin-top: 20px;
+}
+
+.footer-button {
+    margin-left: 20px;
+}
+</style>

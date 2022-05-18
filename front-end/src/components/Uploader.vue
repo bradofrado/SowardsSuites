@@ -212,11 +212,6 @@ input, textarea {
     width: 100%;
 }
 
-button {
-    min-height: 40px;
-    min-width: 75px;
-}
-
 .buttons {
   display: flex;
   justify-content: space-between;
