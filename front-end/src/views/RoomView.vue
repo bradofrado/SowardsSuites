@@ -11,6 +11,7 @@
             <div class="room-description-container">
                 <p name="room-description">{{room.description}}</p>
             </div>
+            <calendar :rooms="[room]" :bookings="bookings" @onBook="onBook"/>
         </div>
         <div class="room-amenities"></div>
     </div>
@@ -18,27 +19,46 @@
 
 <script>
 import axios from 'axios'
+import Calendar from '@/components/Calendar.vue';
 export default {
     name: "RoomView",
+    components: { 
+        Calendar 
+    },
     data() {
         return {
-            room: null
+            room: null,
+            bookings: []
         }
     },
-    created() {
-        this.getRoom();
+    async created() {
+        await this.getRoom();
+        await this.getBookings();
+        this.$root.$data.isLoading = false;
     },
     methods: {
         async getRoom() {
             try {
-                const response = await axios.get('/api/rooms');
-                this.room = response.data.find(x => x._id === this.$route.params.id);
-                this.$root.$data.isLoading = false;
+                const response = await axios.get('/api/rooms/'+this.$route.params.id);
+                this.room = response.data;
                 return true;
             } catch(error) {
                 //console.log(error);
                 return false;
             }
+        },
+        async getBookings() {
+            try {
+                const response = await axios.get('/api/bookings?rooms[]='+this.room._id);
+                this.bookings = response.data;
+                return true;
+            } catch(error) {
+                //console.log(error);
+                return false;
+            }
+        },
+        async onBook() {
+            await this.getBookings();
         }
     },
 }

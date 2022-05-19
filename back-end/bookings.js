@@ -86,6 +86,16 @@ bookingSchema.methods.isValid = function() {
     return this.endDate >= now;
 }
 
+bookingSchema.methods.hasRooms = function(rooms) {
+    if (!rooms) return true;
+
+    roomsIdStrings = this.rooms.map(x => x._id.toString());
+
+    return rooms.every(room => {
+        return roomsIdStrings.includes(room.toString())
+    });
+}
+
 const Booking = mongoose.model('Booking', bookingSchema);
 
 
@@ -116,11 +126,15 @@ router.get('/', async (req, res) => {
         Booking.find().populate('rooms').populate('user').exec(async (err, bookings) => {
             if (err) throw err;
 
-            //Git rid of the dates that are passed their bookings
+            //Git rid of the dates that are passed their bookings or don't have the given rooms
             for (let i = bookings.length - 1; i >= 0; i--) {
                 if (!bookings[i].isValid()) {
                     await bookings[i].delete();
-                    bookings.splice(i);
+                    bookings.splice(i,1);
+                }
+
+                if (!bookings[i].hasRooms(req.query.rooms)) {
+                    bookings.splice(i,1);
                 }
             }
 

@@ -45,6 +45,24 @@ router.get('/', async (req, res) => {
         res.sendStatus(500);
     }
 });
+router.get('/:id', async (req, res) => {
+    try {
+        let room = await Room.findOne({
+            _id: req.params.id
+        });
+
+        if (!room) {
+            return res.status(400).send({
+                message: "Could not find room " + req.params.id
+            });
+        }
+
+        res.send(room);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+})
 const roomUpload = upload.fields([{name: 'image', maxCount: 1}, {name: 'thumbnail', maxCount: 1}]);
 
 router.post('/', validUser(['Admin']), roomUpload, async (req, res) => {
