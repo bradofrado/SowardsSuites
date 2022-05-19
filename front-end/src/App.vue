@@ -63,7 +63,7 @@ html {
 
 #app {
     /* background-color: #f7f7f7; */
-
+    font-family: 'Montserrat' ,sans-serif;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -137,6 +137,12 @@ button {
 
 .button-secondary:hover {
     background-color: #f4f4f4;
+}
+
+.border {
+    border-radius: 0.25rem;
+    border-width: 1px;
+    background-color: #f7fafc;
 }
 
 .disabled {

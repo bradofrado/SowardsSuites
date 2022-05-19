@@ -2,7 +2,7 @@
 <button @click="onClick">
     <slot></slot>
     <Modal :show="show">
-        <h4>{{message}}</h4>
+        <p>{{message}}</p>
         <div class="buttons-container">
             <button class="button button-secondary footer-button" @click="onCancel">{{cancelText}}</button>
             <button class="button button-primary footer-button" @click="onConfirm">{{confirmText}}</button>
@@ -42,7 +42,7 @@ export default {
     methods: {
         onClick(e) {
             this.show = true;
-            this.e = e;
+            this.e = e;            
         },
         onConfirm() {
             this.show = false;

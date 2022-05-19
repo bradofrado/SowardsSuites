@@ -1,10 +1,13 @@
 <template>
     <div class="room-container" v-if="room">
-        <div class="room-main-image"><img name="main-image" :src="room.image"/></div>
+        <div class="room-main-image">
+            <img :src="room.image"/>
+        </div>
         <div class="room-intro-container">
             <div class="room-name-container">
                 <h1 name="room-name">{{room.name}}</h1>
             </div>
+            <hr/>
             <div class="room-description-container">
                 <p name="room-description">{{room.description}}</p>
             </div>
@@ -40,3 +43,32 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.room-container {
+    display: flex;
+    flex-direction: row;
+    padding-top: 20px;
+}
+
+.room-main-image {
+    width: 66.66666%;
+    padding-right: 15px;
+}
+
+.room-intro-container {
+    display: flex;
+    flex-direction: column;
+    padding-left: 15px;
+    width: 33.333333%;
+}
+
+.room-description-container {
+    min-height: 100px; 
+    padding-top: 10px;
+}
+
+img {
+    width: 100%;
+}
+</style>
