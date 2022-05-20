@@ -1,10 +1,13 @@
 <template>
     <div class="room-container" v-if="room">
         <div class="room-main-image">
-            <img :src="room.image"/>
+            <div class="room-name-container">
+                <h1 name="room-name">{{room.name}}</h1>                
+            </div>
+            <img :src="room.image"/>            
         </div>
         <div class="room-intro-container">
-            <div class="room-name-container">
+            <div class="room-name-container-big">
                 <h1 name="room-name">{{room.name}}</h1>
             </div>
             <hr/>
@@ -65,22 +68,36 @@ export default {
 </script>
 
 <style scoped>
+
 .room-container {
     display: flex;
-    flex-direction: row;
-    padding-top: 20px;
+    flex-direction: column;
 }
 
-.room-main-image {
-    width: 66.66666%;
-    padding-right: 15px;
+.room-main-image, .room-intro-container {
+    padding: 0 15px;
+}
+
+.room-name-container {
+    padding-bottom: 15px;
+}
+
+.room-name-container-big {
+    display: none;
+}
+
+.room-intro-container{
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
 }
 
 .room-intro-container {
-    display: flex;
-    flex-direction: column;
-    padding-left: 15px;
-    width: 33.333333%;
+    margin-top: 15px;
+}
+
+.room-intro-container-phone {
+    margin-bottom: 15px;
 }
 
 .room-description-container {
@@ -90,5 +107,32 @@ export default {
 
 img {
     width: 100%;
+}
+
+@media only screen and (min-width: 960px) {
+    .room-container {
+        flex-direction: row;
+        padding-top: 20px;
+    }
+
+    .room-name-container-big {
+        display: block;
+    }
+
+    .room-name-container {
+        display: none;
+    }
+
+    .room-main-image {
+        width: 66.66666%;
+        padding-right: 15px;
+    }
+
+    .room-intro-container {
+        display: flex;
+        flex-direction: column;
+        padding-left: 15px;
+        width: 33.333333%;
+    }
 }
 </style>
