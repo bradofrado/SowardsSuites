@@ -1,9 +1,9 @@
 <template>
 <div>
     <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
-        :columns="$screens({ default: 1, lg: 1 })" @dayclick="onDayClick" ref="calendar"/>
+        :columns="$screens({ default: 1, lg: screens })" @dayclick="onDayClick" ref="calendar"/>
     <p v-if="edit" class="text-center">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="button-secondary rounded d-inline-flex justify-content-center">
-        <span class="booking-list-date-value">{{dateFormat(edit.date.start)}}</span>
+        <span class="calendar-list-date-value">{{dateFormat(edit.startDate)}}</span>
         <span class="flex-shrink-0 m-2">
             <svg
                 class="arrow-svg"
@@ -17,7 +17,7 @@
                 />
             </svg>
             </span>
-        <span class="booking-list-date-value">{{dateFormat(edit.date.end)}}</span>
+        <span class="calendar-list-date-value">{{dateFormat(edit.endDate)}}</span>
         <svg
             class="m-2 arrow-svg"
             viewBox="0 0 24 24"
@@ -64,11 +64,15 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 
 export default {
-    name: "BookView",
+    name: "Calendar",
     props: {
         bookings: Array,
         rooms: Array,
         edit: Object,
+        screens: {
+            default: 1,
+            type: Number
+        }
     },
     data() {
         return {
@@ -83,7 +87,7 @@ export default {
         }
     },
     created() {
-        this.days = this.transformBookings(this.bookings);
+        this.days = this.bookings.map(booking => this.transformBooking(booking));
 
         //Have something shown on today
         this.days.push({date: new Date()});
@@ -97,11 +101,6 @@ export default {
         },
         user() {
             return this.$root.$data.user;
-        },
-        myBookings() {
-            const bookings = this.days.filter(day => day.person && day.person.username === this.user.username);
-            
-            return bookings
         },
         bookBtnClass() {
             let btnClass = '';
@@ -129,38 +128,37 @@ export default {
     watch: {
         edit(edit) {
             if (edit) {
-                this.range = edit.date;                
-                this.$refs.calendar.focusDate(edit.date.start); 
+                const editDay = this.transformBooking(edit);
+                this.range = editDay.date;                
+                this.$refs.calendar.focusDate(editDay.date.start); 
                 this.$refs.calendar.dragValue = null;
             } 
         },
         bookings(bookings) {
-            this.days = this.transformBookings(bookings);
+            this.days = bookings.map(booking => this.transformBooking(booking));
 
             //Have something shown on today
             this.days.push({date: new Date()});
         }
     },
-    methods: {
-        transformBookings(bookings) {
-            return bookings.map(booking => {
-                if (!this.currUsers[booking.user.firstname]) {
-                    this.currUsers[booking.user.firstname] = this.color;
-                    this.color = this.next(this.color, this.colors);
-                }
+    methods: {            
+        transformBooking(booking) {
+            if (!this.currUsers[booking.user.firstname]) {
+                this.currUsers[booking.user.firstname] = this.color;
+                this.color = this.next(this.color, this.colors);
+            }
 
-                return {
-                    _id: booking._id,
-                    date: {
-                        //The back-end is in utc time, so use that
-                        start: dayjs.utc(booking.startDate).toDate(),
-                        end: dayjs.utc(booking.endDate).toDate()
-                    },
-                    person: booking.user,
-                    rooms: booking.rooms,
-                    color: this.currUsers[booking.user.firstname]
-                }
-            });                
+            return {
+                _id: booking._id,
+                date: {
+                    //The back-end is in utc time, so use that
+                    start: dayjs.utc(booking.startDate).toDate(),
+                    end: dayjs.utc(booking.endDate).toDate()
+                },
+                person: booking.user,
+                rooms: booking.rooms,
+                color: this.currUsers[booking.user.firstname]
+            }
         },
         async onBook() {
             if (!this.user) {
@@ -198,8 +196,7 @@ export default {
                 }
                 this.$emit('onBook', start, end, this.rooms);
                 this.range = null;
-                this.loading = false;  
-                this.$emit('edit', null);            
+                this.loading = false;                           
             } catch(error) {
                 //console.log(error);
                 
@@ -219,21 +216,7 @@ export default {
                 return;
             }
 
-            const date = e.date.setHours(23, 59, 59, 999);
-
-            const bookings = this.myBookings.filter(booking => {
-                if (date >= booking.date.start && date <= booking.date.end) {
-                    return true;
-                }
-
-                return false;
-            });
-
-            if (bookings.length) {
-                //this.edit = bookings[0];
-                this.$emit('edit', bookings[0]);
-            }
-            
+            this.$emit('onDayClick', e);            
         },
         async onDelete(booking) {
             try {
@@ -241,14 +224,16 @@ export default {
                 await axios.delete('/api/bookings/'+booking._id);
                 
                 this.range = null;
-                this.$emit('edit', null);
-                //this.edit = null;
                 this.loadingDelete = false;
 
                 this.$emit('onDelete', booking);
             } catch(error) {
                 this.loadingDelete = false;
             }
+        },
+        onCancelEdit() {
+            this.range = null;
+            this.$emit('onCancelEdit');
         },
         getFormat(day) {
             if (!day.person) {
@@ -292,17 +277,6 @@ export default {
 </script>
 
 <style scoped>
-.book-container {
-    display: flex;
-    margin: 20px 0;
-    flex-direction: column;
-}
-
-.rooms-container {
-    display: flex;
-    flex-wrap: wrap;
-    padding-left: 10px;
-}
 
 .center {
     display: block;
@@ -328,56 +302,8 @@ svg {
     display: block;
 }
 
-.booking-list-container {
-    display: flex;
-    margin-top: 40px;
-    flex-direction: column;
-}
-
-.booking-list-rooms {
-    display: flex;
-    margin: 0 20px;
-    flex-wrap: wrap;
-}
-
-.booking-list-room {
-    margin: 20px 5px;
-    width: 90px;
-    height: 90px;
-    font-size: 0.5rem;
-}
-
-.booking-list-dates {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-
-
-.booking-list-date-value {
+.calendar-list-date-value {
     height: 28px;
     padding: 3px 5px;
-}
-
-@media only screen and (min-width: 960px) {
-   .book-container {
-       flex-direction: row;
-   }
-
-   .rooms-container {
-       padding-left: 20px;
-   }
-
-   .booking-list-container {
-       flex-direction: row;
-   }
-
-   .booking-list-room {
-        margin: 0 20px 20px 0;
-        width: 100px;
-        height: 100px;
-        font-size: 7px;
-    }
 }
 </style>
