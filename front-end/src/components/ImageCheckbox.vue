@@ -1,15 +1,13 @@
 <template>
-    <div v-b-tooltip.hover :title="title" :class="'image-button-container ' + activeClass">
-        <button name="image-button" :class="'image-button center-center' + (img ? ' no-color' : '')" @click="$emit('click', id)">            
-            <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
-        </button>
-        <img v-if="img" :src="img">
+    <div :class="'image-button-container ' + activeClass">
+        <image-button v-bind="$props" @click="$emit('click', id)" class="image-button-inner"/>
     </div>
 </template>
 
 <script>
+import ImageButton from './ImageButton.vue';
 export default {
-    name: "ImageButton",
+    name: "ImageCheckbox",
     props: {
         name: String,
         img: String,
@@ -17,6 +15,9 @@ export default {
         active: Boolean,
         id: String,
         title: String
+    },
+    components: {
+        ImageButton
     },
     computed: {
         activeClass() {
@@ -42,14 +43,9 @@ img {
     border-radius: 10px;
 }
 
-.image-button {
-    position: relative;
-    color: inherit;
-    background-color: #999;
-    transition: background-color .3s ease-in-out;
-    width: 100px;
-    height: 100px;
-    border-radius: 5px; 
+.image-button-inner {
+    margin: 0px;
+    padding: 10px;
 }
 
 .no-color {

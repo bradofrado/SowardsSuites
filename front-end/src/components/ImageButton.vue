@@ -1,9 +1,9 @@
 <template>
     <div v-b-tooltip.hover :title="title" class="image-button-container">
-        <router-link v-if="to" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" :to="to">            
+        <router-link v-if="to" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (buttonClass ? buttonClass : '')" :to="to">            
             <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </router-link>
-        <button v-else-if="hasClick" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" @click="onClick">            
+        <button v-else-if="hasClick" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (buttonClass ? buttonClass : '')" @click="onClick">            
             <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </button>
         <div v-else :class="'image-button center-center' + (img ? ' no-color' : '')">
@@ -20,7 +20,8 @@ export default {
         to: String,
         name: String,
         img: String,
-        className: String,
+        id: String,
+        buttonClass: String,
         title: String
     },
     computed: {
@@ -30,7 +31,7 @@ export default {
     },
     methods: {
         onClick() {
-            this.$emit('click');
+            this.$emit('click', this.id);
         }
     }
 }
