@@ -2,31 +2,7 @@
 <div>
     <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
         :columns="$screens({ default: 1, lg: screens })" @dayclick="onDayClick" ref="calendar"/>
-    <p v-if="edit" class="text-center">Editing booking for <button v-b-tooltip.hover title="cancel"  @click="onCancelEdit" class="button-secondary rounded d-inline-flex justify-content-center">
-        <span class="calendar-list-date-value">{{dateFormat(edit.startDate)}}</span>
-        <span class="flex-shrink-0 m-2">
-            <svg
-                class="arrow-svg"
-                viewBox="0 0 24 24"
-            >
-                <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-            </svg>
-            </span>
-        <span class="calendar-list-date-value">{{dateFormat(edit.endDate)}}</span>
-        <svg
-            class="m-2 arrow-svg"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-            >
-            <path d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-    </button></p>
+    <p v-if="edit" class="text-center">Editing booking for <date-range-button @click="onCancelEdit" title="cancel" :start="edit.startDate" :end="edit.endDate" icon="cancel"/></p>
     <div class="d-flex justify-content-center mt-3">
         <span class="date-label">{{dateFormat(this.range && this.range.start)}}</span>
         <span class="flex-shrink-0 m-2">
@@ -62,8 +38,10 @@
 <script>
 import axios from 'axios';
 import dayjs from 'dayjs';
+import DateRangeButton from '@/components/DateRangeButton.vue';
 
 export default {
+    components: { DateRangeButton },
     name: "Calendar",
     props: {
         bookings: Array,

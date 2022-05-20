@@ -2,7 +2,7 @@
 <div>
     <h1 id="booking-top">Book a Room</h1>
     <div class="book-container">
-        <calendar :rooms="selectedRooms" :bookings="bookings" :edit="edit" screens="2"
+        <calendar :rooms="selectedRooms" :bookings="bookings" :edit="edit" :screens="2"
             @onCancelEdit="onCancelEdit" @onBook="onBook" @onDelete="onDelete" @onDayClick="onDayClick"/>
         <div class="rooms-container">
             <div v-for="room in rooms" :key="room.activeId">
@@ -14,23 +14,7 @@
         <h1>My Bookings</h1>
         <div class="booking-list-container" v-for="booking in myBookings" :key="booking.startDate">
             <div class="booking-list-dates">
-                <button v-b-tooltip.hover title="edit" @click="onEdit(booking)" class="button-secondary rounded d-flex justify-content-center">
-                    <span class="booking-list-date-value">{{dateFormat(booking.startDate)}}</span>
-                    <span class="flex-shrink-0 m-2">
-                        <svg
-                            class="arrow-svg"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                            />
-                        </svg>
-                        </span>
-                    <span class="booking-list-date-value">{{dateFormat(booking.endDate)}}</span>
-                </button>
+                <date-range-button @click="onEdit(booking)" title="edit" :start="booking.startDate" :end="booking.endDate"/>                
             </div>
             <div class="booking-list-rooms">
                 <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" :name="room.name"/>
@@ -47,13 +31,15 @@ import dayjs from 'dayjs';
 import ImageCheckbox from '@/components/ImageCheckbox.vue'
 import ImageButton from '@/components/ImageButton.vue'
 import Calendar from '@/components/Calendar.vue';
+import DateRangeButton from '@/components/DateRangeButton.vue';
 
 export default {
     name: "BookView",
     components: {
         ImageCheckbox,
         ImageButton,
-        Calendar
+        Calendar,
+        DateRangeButton
     },
     data() {
         return {            
@@ -176,16 +162,6 @@ export default {
     padding-left: 10px;
 }
 
-.arrow-svg {
-    stroke: currentColor;
-    height: 1rem;
-    width: 1rem;
-}
-
-svg {
-    display: block;
-}
-
 .booking-list-container {
     display: flex;
     margin-top: 40px;
@@ -210,8 +186,6 @@ svg {
     flex-direction: column;
     justify-content: center;
 }
-
-
 
 .booking-list-date-value {
     height: 28px;
