@@ -5,19 +5,7 @@
     <p v-if="edit" class="text-center">Editing booking for <date-range-button @click="onCancelEdit" title="cancel" :start="edit.startDate" :end="edit.endDate" icon="cancel"/></p>
     <div class="d-flex justify-content-center mt-3">
         <span class="date-label">{{dateFormat(this.range && this.range.start)}}</span>
-        <span class="flex-shrink-0 m-2">
-            <svg
-                class="arrow-svg"
-                viewBox="0 0 24 24"
-            >
-                <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-            </svg>
-            </span>
+        <icon name="arrowRight"/>        
         <span class="date-label">{{dateFormat(this.range && this.range.end)}}</span>
     </div>
     <div v-b-tooltip.hover :title="bookBtnTooltip">
@@ -39,9 +27,9 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import DateRangeButton from '@/components/DateRangeButton.vue';
+import Icon from '@/components/Icon.vue';
 
 export default {
-    components: { DateRangeButton },
     name: "Calendar",
     props: {
         bookings: Array,
@@ -51,6 +39,10 @@ export default {
             default: 1,
             type: Number
         }
+    },
+    components: {
+        DateRangeButton,
+        Icon
     },
     data() {
         return {
@@ -274,10 +266,6 @@ export default {
     border: 1px solid #e2e8f0;
     border-radius: 0.25rem;
     background-color: #f7fafc;
-}
-
-svg {
-    display: block;
 }
 
 .calendar-list-date-value {
