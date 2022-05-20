@@ -1,7 +1,7 @@
 <template>
     <div class="rooms-page">
         <h1>Rooms</h1>
-        <div name="grid" class="grid"> 
+        <div class="grid"> 
             <template v-for="rowNum in numRows">
                 <div class="grid-row" :key="rowNum">
                     <div v-for="room in getRoomInRow(rowNum)" class="grid-item" :key="room._id">
@@ -131,6 +131,10 @@ export default {
 </script>
 
 <style scoped>
+.grid {
+    margin-top: 30px;
+}
+
 .grid-row {
     display: flex;
     flex-direction: column;  
