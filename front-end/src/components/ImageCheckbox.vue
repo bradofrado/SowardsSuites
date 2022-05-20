@@ -1,5 +1,5 @@
 <template>
-    <div :class="'image-button-container ' + activeClass">
+    <div v-b-tooltip.hover :title="title" :class="'image-button-container ' + activeClass">
         <button name="image-button" :class="'image-button center-center' + (img ? ' no-color' : '')" @click="$emit('click', id)">            
             <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
         </button>
@@ -15,29 +15,14 @@ export default {
         img: String,
         click: Function,
         active: Boolean,
-        id: String
+        id: String,
+        title: String
     },
-    // data() {
-    //     return {
-    //         active: false
-    //     }
-    // },
     computed: {
         activeClass() {
             return this.$props.active ? 'active' : '';
         }
-    },
-    watch: {
-        // active(newVal) {
-
-        // }
-    },
-    // methods: {
-    //     onClick() {
-    //         this.active = !this.active;
-    //         this.$emit('click', this.$props.id);
-    //     }
-    // }
+    }
 }
 </script>
 
@@ -45,6 +30,7 @@ export default {
 img {
     width: 100%;
     padding: 10px;
+    border-radius: 5px;
 }
 
 .image-button-container {
@@ -63,6 +49,7 @@ img {
     transition: background-color .3s ease-in-out;
     width: 100px;
     height: 100px;
+    border-radius: 5px; 
 }
 
 .no-color {

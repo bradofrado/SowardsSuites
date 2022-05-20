@@ -18,7 +18,7 @@
         </fieldset>
         <fieldset class="buttons">
             <button type="button" @click="close" class="button button-secondary">Close</button>
-            <button type="submit" class="button button-primary">Upload</button>
+            <button type="submit" class="button button-primary">Submit</button>
         </fieldset>
     </form>
 </div>

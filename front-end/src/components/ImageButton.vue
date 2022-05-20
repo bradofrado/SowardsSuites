@@ -1,10 +1,10 @@
 <template>
-    <div class="image-button-container">
-        <router-link v-if="to" name="image-button" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" :to="to">            
-            <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
+    <div v-b-tooltip.hover :title="title" class="image-button-container">
+        <router-link v-if="to" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" :to="to">            
+            <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </router-link>
-        <button v-else-if="hasClick" name="image-button" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" @click="onClick">            
-            <div name="image-button-text" class="image-button-text center-center" >{{name ? name : ''}}</div>
+        <button v-else-if="hasClick" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (className ? className : '')" @click="onClick">            
+            <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </button>
         <div v-else :class="'image-button center-center' + (img ? ' no-color' : '')">
             <div class="image-button-text center-center" >{{name ? name : ''}}</div>
@@ -20,7 +20,8 @@ export default {
         to: String,
         name: String,
         img: String,
-        className: String
+        className: String,
+        title: String
     },
     computed: {
         hasClick() {
@@ -38,14 +39,14 @@ export default {
 <style scoped>
 img {
     width: 100%;
-    border-radius: 50%;
+    border-radius: 5px;
 }
 
 .image-button-container {
     width: 200px;
     height: 200px;
     margin: 20px auto;
-    position: relative;
+    position: relative;    
 }
 
 .image-button {
@@ -56,6 +57,7 @@ img {
     width: 100%;
     height: 100%;
     white-space: nowrap;
+    border-radius: 5px;
 }
 
 .no-color {

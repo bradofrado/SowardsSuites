@@ -6,7 +6,7 @@
             @onCancelEdit="onCancelEdit" @onBook="onBook" @onDelete="onDelete" @onDayClick="onDayClick"/>
         <div class="rooms-container">
             <div v-for="room in rooms" :key="room.activeId">
-                <ImageCheckbox :id='room._id' :name="room.name" :active='room.active' :img="room.thumbnail" @click="onImageCheckboxClick"/>
+                <ImageCheckbox :id='room._id' :active='room.active' :img="room.thumbnail" @click="onImageCheckboxClick" :title="room.name"/>
             </div>
         </div>
     </div>
@@ -17,7 +17,7 @@
                 <date-range-button @click="onEdit(booking)" title="edit" :start="booking.startDate" :end="booking.endDate"/>                
             </div>
             <div class="booking-list-rooms">
-                <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" :name="room.name"/>
+                <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" />
             </div>
         </div>
     </div>

@@ -6,7 +6,7 @@
                 <div class="grid-row" :key="rowNum">
                     <div v-for="room in getRoomInRow(rowNum)" class="grid-item" :key="room._id">
                         <context-menu :on="isAdmin">
-                            <ImageButton :to="`/rooms/${room._id}`" :name="room.name" :img="room.thumbnail"/>
+                            <ImageButton :to="`/rooms/${room._id}`" :img="room.thumbnail" :title="room.name"/>
                             <template v-slot:items>
                                 <context-menu-item @click="onEdit(room)">
                                     Edit Room
