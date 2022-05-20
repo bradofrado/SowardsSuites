@@ -28,11 +28,6 @@ export default {
 </script>
 
 <style scoped>
-img {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-}
 
 .image-button-container {
     width: 90px;
@@ -46,35 +41,6 @@ img {
 .image-button-inner {
     margin: 0px;
     padding: 10px;
-}
-
-.no-color {
-    background-color: rgb(255,255,255,0);
-}
-
-.no-color:hover {
-    background-color: rgba(255, 255, 255, .25) !important;
-}
-
-.center-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.image-button-text {
-    font-size: 1rem;
-    color: #fff;
-}
-
-.image-button:hover {
-    
-    background-color: rgb(223, 222, 222);
-    
-    color: inherit;
-    cursor: pointer;
-    
 }
 
 .active {

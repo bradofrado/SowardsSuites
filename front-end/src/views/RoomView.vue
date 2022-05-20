@@ -107,6 +107,7 @@ export default {
 
 img {
     width: 100%;
+    border-radius: 5px;
 }
 
 @media only screen and (min-width: 960px) {
