@@ -182,9 +182,7 @@ export default {
 }
 
 .booking-list-dates {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    margin: auto;
 }
 
 .booking-list-date-value {
@@ -203,6 +201,13 @@ export default {
 
    .booking-list-container {
        flex-direction: row;
+   }
+
+   .booking-list-dates {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0;
    }
 
    .booking-list-room {

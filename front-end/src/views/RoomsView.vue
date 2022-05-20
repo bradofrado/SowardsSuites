@@ -142,6 +142,7 @@ export default {
 
 .grid-item {
     display: flex;
+    justify-content: center;
 }
 
 .context-item-delete {
