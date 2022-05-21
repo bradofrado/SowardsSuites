@@ -7,7 +7,7 @@
         </div>
         <div name="home-buttons" class="home-buttons">
             <ImageButton to="/rooms" name="Rooms" img="/images/room2.jpg"/>
-            <ImageButton to="/book" name="Book"/>
+            <ImageButton to="/book" name="Book" img="/images/Calendar.png" dark/>
             <ImageButton to="/about" name="About"/>
         </div>
     </div>

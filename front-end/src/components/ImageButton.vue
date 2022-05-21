@@ -1,5 +1,5 @@
 <template>
-    <div v-b-tooltip.hover :title="title" class="image-button-container">
+    <div v-b-tooltip.hover :title="title" :class="'image-button-container' + (dark ? ' dark' : '')">
         <router-link v-if="to" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (buttonClass ? buttonClass : '')" :to="to">            
             <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </router-link>
@@ -22,7 +22,8 @@ export default {
         img: String,
         id: String,
         buttonClass: String,
-        title: String
+        title: String,
+        dark: Boolean
     },
     computed: {
         hasClick() {
@@ -40,7 +41,7 @@ export default {
 <style scoped>
 img {
     width: 100%;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 .image-button-container {
@@ -58,7 +59,7 @@ img {
     width: 100%;
     height: 100%;
     white-space: nowrap;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 .no-color {
@@ -67,6 +68,10 @@ img {
 
 .no-color.image-hover:hover {
     background-color: rgba(255, 255, 255, .25) !important;
+}
+
+.dark .no-color.image-hover:hover {
+    background-color: rgba(153, 153, 153, .25) !important;
 }
 
 .center-center {
@@ -81,12 +86,11 @@ img {
     color: #fff;
 }
 
-/* .image-button:hover {
-    background-color: rgb(223, 222, 222);
-    
-    color: inherit;
-    cursor: pointer;
-} */
+.dark .image-button-text {
+    font-size: 2em;
+    color: #999;
+}
+
 
 .image-hover:hover {
     background-color: rgb(223, 222, 222);

@@ -36,9 +36,6 @@ export default {
             e: null
         }
     },
-    created() {
-        console.log(this.$attrs);
-    },
     methods: {
         onClick(e) {
             this.show = true;
@@ -49,7 +46,6 @@ export default {
             this.$emit('confirm', this.e);
         },
         onCancel() {
-            console.log('You clicked me');
             this.show = false;
             this.$emit('cancel', this.e);
         }
