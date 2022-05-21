@@ -110,7 +110,6 @@ button {
 .button {
     min-height: 40px;
     min-width: 75px;
-    display: inline-flex;
 }
 
 .button .button-text {

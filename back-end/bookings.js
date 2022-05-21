@@ -123,7 +123,7 @@ const checkDate = async (req, res, next) => {
 
 router.get('/', async (req, res) => {
     try {
-        Booking.find().populate('rooms').populate('user').exec(async (err, bookings) => {
+        Booking.find().sort({startDate: 1}).populate('rooms').populate('user').exec(async (err, bookings) => {
             if (err) throw err;
 
             //Git rid of the dates that are passed their bookings or don't have the given rooms
@@ -189,10 +189,23 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
             });
         }
 
-        const booking = await Booking.findOne({
-            _id: req.params.id,
-            user: req.user
-        });
+        const isAdmin = req.user.roles.includes('Admin');
+
+        let booking;
+        
+        //If this is admin, just find the booking
+        if (isAdmin) {
+            booking = await Booking.findOne({
+                _id: req.params.id                
+            });            
+        //Otherwise the booking has to be tied to the current user
+        } else {
+            booking = await Booking.findOne({
+                _id: req.params.id,
+                user: req.user
+            });
+        }
+        
 
         if (!booking) {
             return res.status(400).send({
@@ -202,7 +215,6 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
 
         booking.startDate = req.body.start;
         booking.endDate = req.body.end;
-        booking.user = req.user;
         booking.rooms = req.body.rooms
          
         

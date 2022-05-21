@@ -10,29 +10,15 @@
             </div>
         </div>
     </div>
-    <filter-button id="allBookings">All Bookings</filter-button>
+    <filter-button v-if="bookings.length" id="allBookings">All Bookings</filter-button>
     <filter-button class="ml-0" v-if="user && myBookings.length" id="myBookings">My Bookings</filter-button>
     <b-collapse id="allBookings">
         <h1>All Bookings</h1>
-        <div class="booking-list-container" v-for="booking in bookings" :key="booking.startDate">
-            <div class="booking-list-dates">
-                <date-range-button :start="booking.startDate" :end="booking.endDate"/>                
-            </div>
-            <div class="booking-list-rooms">
-                <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" />
-            </div>
-        </div> 
+        <booking-detail v-for="booking in bookings" :booking="booking" :key="booking.startDate" :edit="isAdmin || (user && booking.user.username === user.username)" @edit="onEdit"/>
     </b-collapse>
     <b-collapse id="myBookings">
         <h1>My Bookings</h1>
-        <div class="booking-list-container" v-for="booking in myBookings" :key="booking.startDate">
-            <div class="booking-list-dates">
-                <date-range-button @click="onEdit(booking)" title="edit" :start="booking.startDate" :end="booking.endDate"/>                
-            </div>
-            <div class="booking-list-rooms">
-                <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" />
-            </div>
-        </div> 
+        <booking-detail v-for="booking in myBookings" :booking="booking" edit @edit="onEdit" :key="booking.startDate"/>
     </b-collapse>
 </div>
 </template>
@@ -42,21 +28,17 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import ImageCheckbox from '@/components/ImageCheckbox.vue'
-import ImageButton from '@/components/ImageButton.vue'
 import Calendar from '@/components/Calendar.vue';
-import DateRangeButton from '@/components/DateRangeButton.vue';
-//import Icon from '../components/Icon.vue';
 import FilterButton from '../components/FilterButton.vue';
+import BookingDetail from '../components/BookingDetail.vue';
 
 export default {
     name: "BookView",
     components: {
         ImageCheckbox,
-        ImageButton,
         Calendar,
-        DateRangeButton,
-        //Icon,
-        FilterButton
+        FilterButton,
+        BookingDetail,
     },
     data() {
         return {            
@@ -75,6 +57,10 @@ export default {
             return this.rooms.filter(room => room.active);
         },
         myBookings() {
+            if (!this.user) {
+                return null;
+            }
+
             const bookings = this.bookings.filter(booking => booking.user.username === this.user.username);
             
             return bookings
@@ -82,6 +68,9 @@ export default {
         user() {
             return this.$root.$data.user;
         },
+        isAdmin() {
+            return this.user && this.user.roles.includes("Admin");
+        }
     },
     watch: {
         edit(edit) {
@@ -179,28 +168,6 @@ export default {
     padding-left: 10px;
 }
 
-.booking-list-container {
-    display: flex;
-    margin-top: 40px;
-    flex-direction: column;
-}
-
-.booking-list-rooms {
-    display: flex;
-    margin: 0 20px;
-    flex-wrap: wrap;
-}
-
-.booking-list-room {
-    margin: 20px 5px;
-    width: 90px;
-    height: 90px;
-    font-size: 0.5rem;
-}
-
-.booking-list-dates {
-    margin: auto;
-}
 
 .booking-list-date-value {
     height: 28px;
@@ -217,23 +184,5 @@ export default {
    .rooms-container {
        padding-left: 20px;
    }
-
-   .booking-list-container {
-       flex-direction: row;
-   }
-
-   .booking-list-dates {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin: 0;
-   }
-
-   .booking-list-room {
-        margin: 0 20px 20px 0;
-        width: 100px;
-        height: 100px;
-        font-size: 7px;
-    }
 }
 </style>

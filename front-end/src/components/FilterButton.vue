@@ -33,6 +33,7 @@ export default {
     border-radius: 20px;
     min-height: 24px;
     height: 24px;
+    display: inline-flex;
 }
 
 .collapsed > .when-open,
