@@ -63,12 +63,14 @@ html {
 
 #app {
     /* background-color: #f7f7f7; */
-    font-family: 'Montserrat' ,sans-serif;
+    /* font-family: 'Montserrat' ,sans-serif; */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     font-family: "Segoe UI", serif;
     margin: 0px;
+    color: #404452;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -108,6 +110,12 @@ button {
 .button {
     min-height: 40px;
     min-width: 75px;
+    display: inline-flex;
+}
+
+.button .button-text {
+    padding: 0px 5px;
+    font-size: 12px;
 }
 
 .button-primary {
@@ -115,7 +123,7 @@ button {
     /* height: 2.5rem; */
     color: #fff;
     /* margin: 1rem 0; */
-    font-weight: 500;
+    /* font-weight: 500; */
     border: none;
     /* max-width: 125px; */
     border-radius: .25rem;
@@ -130,7 +138,9 @@ button {
     border-radius: 0.25rem;
     border-width: 1px;
     background-color: #f7fafc;
-    color: inherit;
+    /* color: inherit; */
+    font-weight: 500;
+    color: #6a7383;
     text-decoration: none;
     min-height: 28px;
 }

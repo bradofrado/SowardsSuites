@@ -10,7 +10,20 @@
             </div>
         </div>
     </div>
-    <div v-if="user && myBookings.length">
+    <filter-button id="allBookings">All Bookings</filter-button>
+    <filter-button class="ml-0" v-if="user && myBookings.length" id="myBookings">My Bookings</filter-button>
+    <b-collapse id="allBookings">
+        <h1>All Bookings</h1>
+        <div class="booking-list-container" v-for="booking in bookings" :key="booking.startDate">
+            <div class="booking-list-dates">
+                <date-range-button :start="booking.startDate" :end="booking.endDate"/>                
+            </div>
+            <div class="booking-list-rooms">
+                <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" />
+            </div>
+        </div> 
+    </b-collapse>
+    <b-collapse id="myBookings">
         <h1>My Bookings</h1>
         <div class="booking-list-container" v-for="booking in myBookings" :key="booking.startDate">
             <div class="booking-list-dates">
@@ -19,8 +32,8 @@
             <div class="booking-list-rooms">
                 <ImageButton v-for="room in booking.rooms" :key="room._id" class="booking-list-room" :img="room.thumbnail" />
             </div>
-        </div>
-    </div>
+        </div> 
+    </b-collapse>
 </div>
 </template>
 
@@ -32,6 +45,8 @@ import ImageCheckbox from '@/components/ImageCheckbox.vue'
 import ImageButton from '@/components/ImageButton.vue'
 import Calendar from '@/components/Calendar.vue';
 import DateRangeButton from '@/components/DateRangeButton.vue';
+//import Icon from '../components/Icon.vue';
+import FilterButton from '../components/FilterButton.vue';
 
 export default {
     name: "BookView",
@@ -39,7 +54,9 @@ export default {
         ImageCheckbox,
         ImageButton,
         Calendar,
-        DateRangeButton
+        DateRangeButton,
+        //Icon,
+        FilterButton
     },
     data() {
         return {            
@@ -189,6 +206,8 @@ export default {
     height: 28px;
     padding: 3px 5px;
 }
+
+
 
 @media only screen and (min-width: 960px) {
    .book-container {
