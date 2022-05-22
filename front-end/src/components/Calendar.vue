@@ -1,7 +1,23 @@
 <template>
 <div>
     <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
-        :columns="$screens({ default: 1, lg: screens })" @dayclick="onDayClick" ref="calendar"/>
+        :columns="$screens({ default: 1, lg: screens })" @dayclick="onDayClick" ref="calendar">
+        <template #day-popover="{ dayTitle, attributes, hide }">
+            <div>
+                <div class="text-xs text-gray-300 font-semibold text-center">
+                    {{ dayTitle }}
+                </div>
+                <popover-row
+                    v-for="attr in attributes"
+                    :key="attr.key"
+                    :attribute="attr">
+                    <slot name="label" :label="attr.customData.label" :booking="attr.customData.booking" :hide="hide"> 
+                         <span>{{attr.customData.label}}</span>
+                    </slot>                   
+                </popover-row>
+            </div>
+        </template>
+    </v-date-picker>
     <p v-if="edit" class="text-center">Editing booking for <date-range-button @click="onCancelEdit" title="cancel" :start="edit.startDate" :end="edit.endDate" icon="cancel"/></p>
     <div class="d-flex justify-content-center mt-3">
         <span class="date-label">{{dateFormat(this.range && this.range.start)}}</span>
@@ -28,6 +44,8 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import DateRangeButton from '@/components/DateRangeButton.vue';
 import Icon from '@/components/Icon.vue';
+import dateFormat from '@/dateFormat.js';
+import PopoverRow from 'v-calendar/lib/components/popover-row.umd.min'
 
 export default {
     name: "Calendar",
@@ -42,7 +60,8 @@ export default {
     },
     components: {
         DateRangeButton,
-        Icon
+        Icon,
+        PopoverRow,
     },
     data() {
         return {
@@ -99,8 +118,8 @@ export default {
         edit(edit) {
             if (edit) {
                 const editDay = this.transformBooking(edit);
-                this.range = editDay.date;                
                 this.$refs.calendar.focusDate(editDay.date.start); 
+                this.range = editDay.date;                
                 this.$refs.calendar.dragValue = null;
             } 
         },
@@ -213,7 +232,6 @@ export default {
                 }
             }
 
-            //const color = index + 1 < this.colors.length ? this.colors[index+1] : this.colors[0];
             const rooms = day.rooms.reduce((prev, curr, i) => {
                 prev += curr.name;
 
@@ -224,12 +242,25 @@ export default {
                 return prev;
             }, '');
 
+            const booking = this.bookings.find(x => x._id === day._id);
+
+            if (!booking) {
+                throw Error("Cannot find booking");
+            }
+
             return {
                 dates: day.date,
                 bar: day.color,
                 popover: {
-                    label: `${day.person.firstname}-${rooms}`
+                    //label: `${day.person.firstname}-${rooms}`,
+                    isInteractive: true,
+                    visibility: 'hover'
+                },
+                customData: {
+                    label: `${day.person.firstname}-${rooms}`,
+                    booking: booking
                 }
+                //popover: true
             };
         },
         next(curr, all) {
@@ -239,9 +270,7 @@ export default {
 
             return curr
         },
-        dateFormat(date) {
-            return date ? dayjs(date).format('MM/DD/YYYY') : ''
-        }
+        dateFormat
     }
 }
 </script>
@@ -272,4 +301,5 @@ export default {
     height: 28px;
     padding: 3px 5px;
 }
+
 </style>

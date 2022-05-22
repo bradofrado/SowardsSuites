@@ -3,7 +3,14 @@
     <h1 id="booking-top">Book a Room</h1>
     <div class="book-container">
         <calendar :rooms="selectedRooms" :bookings="bookings" :edit="edit" :screens="2"
-            @onCancelEdit="onCancelEdit" @onBook="onBook" @onDelete="onDelete" @onDayClick="onDayClick"/>
+            @onCancelEdit="onCancelEdit" @onBook="onBook" @onDelete="onDelete">
+            <template #label="{label, booking, hide}">
+                <button class="popover-label" v-if="isAdmin || myBookings.includes(booking)" @click="hide(), onEdit(booking)">
+                    <span>{{label}}</span>
+                    <icon class="light" name="edit"/>
+                </button>
+            </template>
+        </calendar>
         <div class="rooms-container">
             <div v-for="room in rooms" :key="room.activeId">
                 <ImageCheckbox :id='room._id' :active='room.active' :img="room.thumbnail" @click="onImageCheckboxClick" :title="room.name"/>
@@ -24,13 +31,13 @@
 </template>
 
 <script>
-//import VCalendar from 'v-calendar';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import ImageCheckbox from '@/components/ImageCheckbox.vue'
 import Calendar from '@/components/Calendar.vue';
 import FilterButton from '../components/FilterButton.vue';
 import BookingDetail from '../components/BookingDetail.vue';
+import Icon from '../components/Icon.vue';
 
 export default {
     name: "BookView",
@@ -39,6 +46,7 @@ export default {
         Calendar,
         FilterButton,
         BookingDetail,
+        Icon
     },
     data() {
         return {            
@@ -175,6 +183,21 @@ export default {
 }
 
 
+.popover-label {
+    background-color: transparent;
+    color: inherit;
+    font-weight: inherit;
+    display: inline-flex;
+    align-items: center;
+}
+
+.popover-label :first-child {
+    margin-right: 5px;
+}
+
+.popover-label:hover {
+    color: #b6b6b6;
+}
 
 @media only screen and (min-width: 960px) {
    .book-container {
