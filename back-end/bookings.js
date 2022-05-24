@@ -238,14 +238,20 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
 
 router.delete('/:id', validUser, async (req, res) => {
     try {
-        const booking = await Booking.findOne({
-            _id: req.params.id,
-            user: req.user
-        });
+        const isAdmin = req.user.roles.includes('Admin');
 
-        if (!booking) {
-            return res.status(400).send({
-                message: "Either could not find booking with id " + req.params.id + " or invalid user"
+        let booking;
+        
+        //If this is admin, just find the booking
+        if (isAdmin) {
+            booking = await Booking.findOne({
+                _id: req.params.id                
+            });            
+        //Otherwise the booking has to be tied to the current user
+        } else {
+            booking = await Booking.findOne({
+                _id: req.params.id,
+                user: req.user
             });
         }
 
