@@ -5,7 +5,7 @@
         <calendar :rooms="selectedRooms" :bookings="bookings" :edit="edit" :screens="2"
             @onCancelEdit="onCancelEdit" @onBook="onBook" @onDelete="onDelete">
             <template #label="{label, booking, hide}">
-                <button class="popover-label" v-if="isAdmin || myBookings.includes(booking)" @click="hide(), onEdit(booking)">
+                <button class="popover-label" v-if="isAdmin || (user && myBookings.includes(booking))" @click="hide(), onEdit(booking)">
                     <span>{{label}}</span>
                     <icon class="light" name="edit"/>
                 </button>
