@@ -148,8 +148,13 @@ export default {
             room.activeId = room._id + room.active;
         },
         onEdit(booking) {
-            this.edit = booking;
-            window.scrollTo(0,0);
+            //We need to delay setting the edit to fix
+            //a bug where the popup elements were persisting 
+            //even after clicking the edit button
+            setTimeout(() => {
+                this.edit = booking;
+                window.scrollTo(0,0);
+            }, 200)
         },
         async onDelete() {
             this.edit = null;

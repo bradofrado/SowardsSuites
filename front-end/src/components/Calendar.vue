@@ -117,10 +117,15 @@ export default {
     watch: {
         edit(edit) {
             if (edit) {
-                const editDay = this.transformBooking(edit);
-                this.$refs.calendar.focusDate(editDay.date.start); 
-                this.range = editDay.date;                
-                this.$refs.calendar.dragValue = null;
+                this.range = null;
+
+                this.$nextTick(() => {
+                    const editDay = this.transformBooking(edit);
+                    this.$refs.calendar.focusDate(editDay.date.start); 
+                    this.$refs.calendar.dragValue = null;
+                    this.range = editDay.date; 
+                });
+                               
             } 
         },
         bookings(bookings) {
@@ -252,15 +257,13 @@ export default {
                 dates: day.date,
                 bar: day.color,
                 popover: {
-                    //label: `${day.person.firstname}-${rooms}`,
-                    isInteractive: true,
-                    visibility: 'hover'
+                    //isInteractive: true,
+                    visibility: 'hover',                    
                 },
                 customData: {
                     label: `${day.person.firstname}-${rooms}`,
                     booking: booking
-                }
-                //popover: true
+                }                
             };
         },
         next(curr, all) {
