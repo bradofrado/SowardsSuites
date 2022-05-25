@@ -14,7 +14,7 @@
             <div class="room-description-container">
                 <p name="room-description">{{room.description}}</p>
             </div>
-            <calendar :rooms="[room]" :bookings="bookings" @onBook="onBook"/>
+            <book-calendar :rooms="[room]" :bookings="bookings" @onBook="onBook"/>
         </div>
         <div class="room-amenities"></div>
     </div>
@@ -22,11 +22,11 @@
 
 <script>
 import axios from 'axios'
-import Calendar from '@/components/Calendar.vue';
+import BookCalendar from '@/components/BookCalendar.vue';
 export default {
     name: "RoomView",
     components: { 
-        Calendar 
+        BookCalendar 
     },
     data() {
         return {
