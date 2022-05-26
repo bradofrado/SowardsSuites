@@ -27,7 +27,7 @@
             </template>
         </div>
         <Modal :show="show">
-            <Uploader :room="editRoom" @close="close" @uploadFinished="uploadFinished" />
+            <Uploader @close="close" @submit="onUpload" :inputs="inputs" title="Add a room" :error="error"/>
         </Modal>
     </div>
 </template>
@@ -56,12 +56,13 @@ export default {
         return {
             rooms: [],
             show: false,
-            editRoom: null
+            editRoom: null,
+            error: '',
         }
     },
-    created(){
-        this.getRooms();
-    },
+    async created(){
+        await this.getRooms();
+    },    
     methods: {
         async getRooms() {
             try {
@@ -90,9 +91,36 @@ export default {
         close() {
             this.show = false;
         },
-        async uploadFinished() {
-            this.show = false;
-            await this.getRooms();
+        async onUpload(outputs, inputsChanged) {
+            try {                
+                if (!inputsChanged) {
+                    this.show = false;
+                    return;
+                }
+
+                const formData = new FormData();
+                
+                if (typeof outputs.image === 'object')
+                    formData.append('image', outputs.image, outputs.image.name);
+                if (outputs.thumbnail && typeof outputs.thumbnail === 'object')
+                    formData.append('thumbnail', outputs.thumbnail, outputs.thumbnail.name);                
+                
+                formData.append('name', outputs.name);
+                formData.append('description', outputs.description);
+
+                if (this.editRoom) {
+                    await axios.put('/api/rooms/' + this.editRoom._id, formData);
+                }
+                else {
+                    await axios.post("/api/rooms", formData);
+                }
+
+                this.show = false;
+                await this.getRooms();
+            } catch (error) {
+                console.log(error);
+                this.error = "Error: " + error.response.data.message;
+            }            
         },
         onEdit(room) {
             if (!this.isAdmin) {
@@ -117,6 +145,33 @@ export default {
         }
     },
     computed: {
+        inputs() {
+            return {
+                name: {
+                    type: 'input',
+                    title: 'Name',
+                    value: this.editRoom && this.editRoom.name,
+                    required: true
+                },
+                description: {
+                    type: 'textarea',
+                    title: 'Description',
+                    value: this.editRoom && this.editRoom.description,
+                    required: true
+                },
+                image: {
+                    type: 'file',
+                    title: 'Choose an Image',
+                    value: this.editRoom && this.editRoom.image,
+                    required: true
+                },
+                thumbnail: {
+                    type: 'file',
+                    title: 'Choose a Thumbnail',
+                    value: this.editRoom && this.editRoom.thumbnail                    
+                },
+            }
+        },
         numRows() {
             const numRows = Math.ceil(this.rooms.length / 3);
             return numRows;

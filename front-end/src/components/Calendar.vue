@@ -21,6 +21,7 @@
 
 <script >
 import PopoverRow from 'v-calendar/lib/components/popover-row.umd.min';
+import dayjs from 'dayjs';
 
 export default {
     name: "Calendar",
@@ -58,7 +59,16 @@ export default {
             } 
         },
         range(range) {
-            this.$emit('input', range);
+            let date = range;
+            if (range) {
+                //Make the time the end of day of the local time, then convert that to utc (back-end is in utc time)
+                const start = dayjs.utc(range.start.setHours(23, 59, 59, 999)).toDate();
+                const end = dayjs.utc(range.end.setHours(23, 59, 59, 999)).toDate();
+                date.start = start;
+                date.end = end;
+            }
+            
+            this.$emit('input', date);
         },
         value(value) {
             if (value != this.range) {

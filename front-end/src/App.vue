@@ -175,4 +175,8 @@ button {
     max-width: 125px;
 }
 
+.center {
+    display: block;
+    margin: 10px auto;
+}
 </style>

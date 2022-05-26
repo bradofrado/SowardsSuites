@@ -5,24 +5,28 @@
             <h1>Welcome to Sowards' Suites</h1>
             <h4>What can we help you with?</h4>
         </div>
-        <div name="home-buttons" class="home-buttons">
+        <div class="home-buttons">
             <ImageButton to="/rooms" name="Rooms" img="/images/room2.jpg"/>
             <ImageButton to="/book" name="Book" img="/images/Calendar.png" dark/>
-            <ImageButton to="/about" name="About"/>
+            <ImageButton to="/about" name="Upcoming Events"/>
         </div>
     </div>
+    <event-calendar />
   </div>
 </template>
 
 <script>
 import ImageButton from '@/components/ImageButton.vue'
+import EventCalendar from '../components/EventCalendar.vue';
+
 
 export default {
-  name: 'HomeView',
-  components: {
-      ImageButton
-  },
-    mounted() {
+    name: 'HomeView',
+    components: {
+        ImageButton,
+        EventCalendar
+    },
+    async created() {
         this.$root.$data.isLoading = false;
     }
 }

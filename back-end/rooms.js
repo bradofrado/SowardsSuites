@@ -6,23 +6,10 @@ const fs = require('fs');
 
 const router = express.Router();
 
-const env = require('./env.js');
-const root = env.root;
+const uploader = require('./uploader.js');
+const upload = uploader.upload('rooms');
+const deletePhoto = uploader.deletePhoto;
 
-const upload = multer({
-    dest: root+'/images',
-    limits: {
-        fileSize: 50000000
-    }
-});
-
-const deletePhoto = function(path) {
-    const url = `${root}${path}`;
-
-    console.log("Removing photo at " + path);
-    fs.unlinkSync(url);
-    console.log("File removed:", url);
-}
 
 const roomSchema = new mongoose.Schema({
     name: String,
@@ -67,16 +54,20 @@ const roomUpload = upload.fields([{name: 'image', maxCount: 1}, {name: 'thumbnai
 
 router.post('/', validUser(['Admin']), roomUpload, async (req, res) => {
     try {
-        if (!req.body.name || !req.body.description) {
+        if (!req.body.name || !req.body.description || !req.files['image']) {
             return res.status(400).send({
                 message: "Invalid body parameters"
             });
         }
 
+        const image = req.files['image'][0];
+        const thumbnail = req.files['thumbnail'] ? req.files['thumbnail'][0] : req.files['image'][0];
+
+
         const room = new Room({
             name: req.body.name,
-            image: '/images/' + req.files['image'][0].filename,
-            thumbnail: '/images/' + req.files['thumbnail'][0].filename,
+            image: '/images/rooms/' + image.filename,
+            thumbnail: '/images/rooms/' + thumbnail.filename,
             description: req.body.description
         });
 
