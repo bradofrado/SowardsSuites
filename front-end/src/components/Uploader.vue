@@ -11,7 +11,8 @@
         <div class="imageInputContainer">
             <template v-for="(input, index) of theInputs" >
                 <fieldset :key="index">
-                    <file-input v-if="input.type == 'file'" v-model="input.value" :title="input.title"/>                    
+                    <file-input v-if="input.type == 'file'" v-model="input.value" :title="input.title" />  
+                    <calendar v-else-if="input.type == 'calendar'" v-model="input.value" />        
                 </fieldset>
             </template>
         </div>
@@ -28,6 +29,7 @@
 //import axios from 'axios';
 import FileInput from "@/components/FileInput.vue"
 import {Copy} from '@/dateFormat.js';
+import Calendar from './Calendar.vue';
 
 export default {
     name: 'Uploader',
@@ -38,7 +40,8 @@ export default {
         error: String,
     },
     components: {
-        FileInput
+        FileInput,
+        Calendar,
     },
     data() {
         return {
@@ -152,5 +155,9 @@ input, textarea {
 .buttons {
   display: flex;
   justify-content: space-between;
+}
+
+.error {
+    color: red;
 }
 </style>

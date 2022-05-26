@@ -1,6 +1,6 @@
 <template>
 <div>
-    <calendar @dayclick="onDayClick" v-model="range" :days="days" :edit="editDate" :screens="screens">
+    <calendar class="center" @dayclick="onDayClick" v-model="range" :days="days" :edit="editDate" :screens="screens">
         <template v-for="(index, name) in $scopedSlots" v-slot:[name]="data">
             <slot :name="name" v-bind="data"></slot>
         </template>

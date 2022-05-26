@@ -1,5 +1,5 @@
 <template>
-    <v-date-picker class="center" :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
+    <v-date-picker :attributes='attrs' v-model="range" is-range :min-date="new Date()" 
         :columns="$screens({ default: 1, lg: screens })" @dayclick="onDayClick" ref="calendar">
         <template #day-popover="{ dayTitle, attributes, hide }">
             <div>
@@ -44,9 +44,9 @@ export default {
     },
     computed: {
         attrs() {
-            const days = this.days.map((day,i) => {
+            const days = this.days ? this.days.map((day,i) => {
                 return this.getFormat(day, i);
-            });
+            }) : [];
             return days;
         },
     },

@@ -187,24 +187,6 @@ export default {
     padding: 3px 5px;
 }
 
-
-.popover-label {
-    background-color: transparent;
-    color: inherit;
-    font-weight: inherit;
-    display: inline-flex;
-    align-items: center;
-    padding: 0px;
-}
-
-.popover-label :first-child {
-    margin-right: 5px;
-}
-
-.popover-label:hover {
-    color: #b6b6b6;
-}
-
 @media only screen and (min-width: 960px) {
    .book-container {
        flex-direction: row;

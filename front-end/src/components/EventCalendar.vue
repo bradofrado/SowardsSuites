@@ -1,11 +1,19 @@
 <template>
-<div >
-    <calendar :days="events" :screens="2" v-model="range"/>
+<div>
+    <calendar class="center" :days="theEvents" :screens="1" v-model="range">
+        <template #label="{label, data, hide}">
+            <button class="popover-label" v-if="(user && myEvents.includes(data))" @click="hide(), onEdit(data)">
+                <span>{{label}}</span>
+                <icon class="light" name="edit"/>
+            </button>
+        </template>
+    </calendar>
+    <!-- <p v-if="edit" class="text-center">Editing event for <date-range-button @click="edit = null" title="cancel" :start="edit.startDate" :end="edit.endDate" icon="cancel"/></p> -->
     <div class="center w-125 d-flex justify-content-center" v-b-tooltip.hover :title="eventBtnTooltip">
-        <button :class="'button button-primary h-2 mw-125 w-100 ' + (range ? '' : 'disabled')" @click="onNew">New Event</button>
+        <button :class="'button button-primary h-2 mw-125 w-100'" @click="onNew">{{(edit ? 'Edit' : 'Create')}} Event</button>
     </div>
     <modal :show="show">
-        <uploader :inputs="inputs" @submit="onUpload" :title="title" @close="show = false" :error="error"/>
+        <uploader :inputs="inputs" @submit="onUpload" :title="title" @close="show = false, edit = false" :error="error"/>
     </modal>
 </div>
 </template>
@@ -17,24 +25,34 @@ import dayjs from 'dayjs';
 import Modal from './Modal.vue';
 import Uploader from './Uploader.vue';
 import { rangeFormat } from '@/dateFormat.js';
+import Icon from './Icon.vue';
+//import DateRangeButton from './DateRangeButton.vue';
 
 export default {
     name: "EventCalendar",
+    props: {
+        events: Array
+    },
     data() {
         return {
-            events: [],
+            theEvents: [],
             show: false,
             range: null,
-            error: ''
+            error: '',
+            edit: null
         }
     },
     components: {
         Calendar,
         Modal,
         Uploader,
+        Icon,
+        //DateRangeButton,
     },
-    async created() {
-        await this.getEvents();
+    created() {
+        this.theEvents = this.$props.events.map(x => this.transformEvent(x));
+        this.theEvents.push({date: new Date()});
+
         this.$root.$data.isLoading = false;
     },
     watch: {
@@ -42,6 +60,13 @@ export default {
             if (!show) {
                 this.range = null;
             }
+        },
+        events(events) {
+            this.theEvents = events.map(x => this.transformEvent(x));
+            this.theEvents.push({date: new Date()});
+        },
+        edit(edit) {
+            if (!edit) this.range = null;
         }
     },
     computed: {
@@ -50,16 +75,28 @@ export default {
                 title: {
                     type: 'input',
                     title: 'Title',
+                    value: this.edit ? this.edit.title : null,
                     required: true
                 },
                 description: {
                     type: 'textarea',
                     title: 'Description',
+                    value: this.edit ? this.edit.description : null,
                     required: true
                 },
                 image: {
                     type: 'file',
                     title: 'Choose an Image',
+                    value: this.edit ? this.edit.image : null,
+                    required: true
+                },
+                dates: {
+                    type: 'calendar',
+                    title: 'Dates',
+                    value: this.edit ? {
+                        start: dayjs.utc(this.edit.startDate).toDate(),
+                        end: dayjs.utc(this.edit.endDate).toDate()
+                    } : null,
                     required: true
                 }
             }
@@ -70,21 +107,23 @@ export default {
         title() {
             const range = this.rangeFormat(this.range);
             console.log(range);
-            return 'Create an Event for '+ range;
-        }
+            return this.edit ? 'Edit Event' : 'Create an Event';
+        },
+        myEvents() {
+            if (!this.user) {
+                return null;
+            }
+
+            const events = this.events.filter(event => event.user.username === this.user.username);
+            
+            return events
+        },
+        user() {
+            return this.$root.$data.user;
+        },
     },
     methods: {
-        async onUpload(outputs, inputsChanged) {
-            if (!inputsChanged) {
-                this.show = false;
-                return;
-            }
-
-            if (!this.range) {
-                this.error = "Must select a range of dates";
-                return;
-            }
-
+        async onUpload(outputs) {
             try {
                 const formData = new FormData();
                 
@@ -93,25 +132,33 @@ export default {
                 
                 formData.append('title', outputs.title);
                 formData.append('description', outputs.description);
-                formData.append('startDate', this.range.start);
-                formData.append('endDate', this.range.end);
-                // if (this.editRoom) {
-                //     await axios.put('/api/events/' + this.editRoom._id, formData);
-                // }
-                // else {
+                formData.append('startDate', outputs.dates.start);
+                formData.append('endDate', outputs.dates.end);
+                if (this.edit) {
+                    await axios.put('/api/events/' + this.edit._id, formData);
+                }
+                else {
                     await axios.post("/api/events", formData);
-               // }
+                }
 
                 this.show = false;
-                await this.getEvents();
+                this.edit = null;
+                this.$emit('new');
             } catch (error) {
                 console.log(error);
                 this.error = "Error: " + error.response.data.message;
             }                        
         },
         onNew() {
-            if (!this.range) return;
             this.show = true;
+        },
+        onEdit(event) {
+            this.edit = event;
+            this.show = true;
+            // this.range = {
+            //     start: dayjs.utc(this.edit.startDate).toDate(),
+            //     end: dayjs.utc(this.edit.endDate).toDate()
+            // };            
         },
         transformEvent(event) {
             return {
@@ -127,16 +174,7 @@ export default {
                 data: event
             }
         },
-        async getEvents() {
-            try {
-                const response = await axios.get('/api/events');
-
-                this.events = response.data.map(x => this.transformEvent(x));
-                this.events.push({date: new Date()});
-            } catch(err) {
-                console.log(err);
-            }
-        },
+        
         rangeFormat
     }
 }

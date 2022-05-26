@@ -51,9 +51,46 @@ router.post('/', validUser, upload.single('image'), async (req, res) => {
             endDate: req.body.endDate,
             title: req.body.title,
             description: req.body.description,
-            image: '/image/events/' + req.file.filename,
+            image: '/images/events/' + req.file.filename,
             user: req.user
         });
+
+        await event.save();
+
+        return res.send(event);
+    } catch(error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+router.put('/:id', validUser, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.body.title || !req.body.startDate || !req.body.endDate) {
+            return res.status(400).send({
+                message: "Invalid body parameters"
+            });
+        }
+
+        const event = await Event.findOne({
+            _id: req.params.id,
+            user: req.user
+        });
+
+        if (!event) {
+            return res.status(400).send({
+                message: "Could not find event or invalid user"
+            });
+        }
+
+        event.startDate = req.body.startDate;
+        event.endDate = req.body.endDate;
+        event.title = req.body.title;
+        event.description = req.body.description;
+
+        if (req.file) {
+            event.image = '/images/events/' + req.file.filename;
+        }
 
         await event.save();
 

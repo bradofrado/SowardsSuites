@@ -1,5 +1,5 @@
 <template>
-    <div class="imageInput" @click="chooseImage">
+    <div class="imageInput" @click="chooseImage" >
         <img v-if="url" :src="url" />
         <div v-if="!url" class="placeholder">
             {{title}}
