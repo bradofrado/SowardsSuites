@@ -3,17 +3,21 @@
     <form class="pure-form" @submit.prevent="onSubmit">
         <legend>{{title}}</legend>
         <template v-for="(input, index) of theInputs" >
-            <fieldset :key="index">
-                <input v-if="input.type == 'input'" v-model="input.value" :placeholder="input.title"/>
-                <textarea v-else-if="input.type == 'textarea'" v-model="input.value" :placeholder="input.title"></textarea>            
+            <fieldset v-if="input.type == 'input'" :key="index">
+                <input v-model="input.value" :placeholder="input.title"/>                
             </fieldset>
+            <fieldset v-else-if="input.type == 'textarea'" :key="index">
+                <input v-model="input.value" :placeholder="input.title"/>                
+            </fieldset>                 
         </template>
         <div class="imageInputContainer">
             <template v-for="(input, index) of theInputs" >
-                <fieldset :key="index">
-                    <file-input v-if="input.type == 'file'" v-model="input.value" :title="input.title" />  
-                    <calendar v-else-if="input.type == 'calendar'" v-model="input.value" />        
+                <fieldset v-if="input.type == 'file'" :key="index">
+                    <file-input v-model="input.value" :title="input.title" />                            
                 </fieldset>
+                <fieldset v-else-if="input.type == 'calendar'" :key="index">
+                    <calendar v-model="input.value" />        
+                </fieldset>        
             </template>
         </div>
         <p v-if="submitError" class="error">{{submitError}}</p>
@@ -146,6 +150,7 @@ export default {
 
 .imageInputContainer {
     display: flex;
+    justify-content: space-around;
 }
 
 input, textarea {

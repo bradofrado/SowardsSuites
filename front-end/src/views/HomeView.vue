@@ -11,7 +11,7 @@
             <ImageButton to="/about" name="Upcoming Events"/>
         </div>
     </div>
-    <div>
+    <div class="events-outer">
         <h1>Events</h1>
         <div class="events-container">
             <event-calendar :events="events" @new="onSubmitEvent"/>
@@ -95,6 +95,10 @@ export default {
 
 h4 {
     margin-top: 0;
+}
+
+.events-outer {
+    padding-top: 20px;
 }
 
 @media only screen and (min-width: 960px) {
