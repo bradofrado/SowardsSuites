@@ -64,11 +64,6 @@ export default {
     font-size: 0.5rem;
 }
 
-.no-hover:hover {
-    background-color: #f7fafc;
-    cursor: default;
-}
-
 @media only screen and (min-width: 960px) {
     .booking-list-container {
        flex-direction: row;

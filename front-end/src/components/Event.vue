@@ -2,12 +2,17 @@
     <div class="event-container">
         <h1>{{event.title}}</h1>
         <img :src="event.image"/>
+        <div class="d-flex justify-content-center no_hover">
+            <date-range-button :start="event.startDate" :end="event.endDate"/>
+        </div>
         <p class="event-description">{{event.description}}</p>
     </div>
 </template>
 
 <script>
+import DateRangeButton from './DateRangeButton.vue'
 export default {
+    components: { DateRangeButton },
     name: "Event",
     props: {
         event: Object

@@ -196,4 +196,9 @@ button {
 .popover-label:hover {
     color: #b6b6b6;
 }
+
+.no-hover:hover {
+    background-color: #f7fafc;
+    cursor: default;
+}
 </style>
