@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { deletePhoto } = require('./uploader.js');
 
 const router = express.Router();
 
@@ -89,7 +90,14 @@ router.put('/:id', validUser, upload.single('image'), async (req, res) => {
         event.description = req.body.description;
 
         if (req.file) {
-            event.image = '/images/events/' + req.file.filename;
+            const filename = '/images/events/' + req.file.filename;
+
+            //Delete the old photo
+            if (filename != event.image) {
+                deletePhoto(event.image);
+            }
+
+            event.image = filename;
         }
 
         await event.save();

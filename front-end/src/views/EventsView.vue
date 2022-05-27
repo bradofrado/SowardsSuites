@@ -1,6 +1,9 @@
 <template>
-<div class="events-container">
-    <event v-for="(event, i) in events" :event="event" :key="i"/>
+<div class="events-view-container">
+    <h1>Events</h1>
+    <div class="events-container">
+        <event v-for="(event, i) in events" :event="event" :key="i"/>
+    </div>
 </div>
 </template>
 
@@ -42,5 +45,9 @@ export default {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     grid-auto-rows: minmax(100px, auto);
+}
+
+.events-view-container {
+
 }
 </style>

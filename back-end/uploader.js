@@ -14,11 +14,15 @@ const upload = function(path) {
 };
 
 const deletePhoto = function(path) {
-    const url = `${root}${path}`;
+    try {
+        const url = `${root}${path}`;
 
-    console.log("Removing photo at " + path);
-    fs.unlinkSync(url);
-    console.log("File removed:", url);
+        console.log("Removing photo at " + path);
+        fs.unlinkSync(url);
+        console.log("File removed:", url);
+    } catch(error) {
+        console.log(error);
+    } 
 }
 
 module.exports = {

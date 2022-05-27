@@ -96,7 +96,7 @@ export default {
                     value: this.edit ? {
                         start: dayjs.utc(this.edit.startDate).toDate(),
                         end: dayjs.utc(this.edit.endDate).toDate()
-                    } : null,
+                    } : this.range,
                     required: true
                 }
             }
