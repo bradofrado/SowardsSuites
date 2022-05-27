@@ -10,7 +10,7 @@
                     <b-nav-item to="/">Home</b-nav-item>
                     <b-nav-item to="/rooms">Rooms</b-nav-item>
                     <b-nav-item to="/book">Book</b-nav-item>
-                    <b-nav-item to="/about">About</b-nav-item>
+                    <b-nav-item to="/events">Events</b-nav-item>
                     <b-nav-item to="/login">Login</b-nav-item>
                 </b-navbar-nav>
             </b-collapse>

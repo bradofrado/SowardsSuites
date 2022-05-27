@@ -1,6 +1,6 @@
 <template>
 <div>
-    <calendar class="center" :days="theEvents" :screens="1" v-model="range">
+    <calendar class="center" :days="theEvents" :screens="2" v-model="range">
         <template #label="{label, data, hide}">
             <button class="popover-label" v-if="(user && myEvents.includes(data))" @click="hide(), onEdit(data)">
                 <span>{{label}}</span>

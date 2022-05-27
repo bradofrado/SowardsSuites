@@ -6,6 +6,7 @@ import PageNotFound from '../views/PageNotFound.vue'
 import BookView from '../views/BookView.vue'
 import LoginView from '../views/LoginView.vue'
 import RoomView from '../views/RoomView.vue'
+import EventsView from '../views/EventsView.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -34,14 +35,11 @@ const routes = [
     name: 'login',
     component: LoginView
 },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  },
+{
+    path: '/events',
+    name: 'events',
+    component: EventsView
+},
   { path: "*", component: PageNotFound }
 ]
 

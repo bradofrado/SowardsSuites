@@ -1,7 +1,9 @@
 <template>
     <div class="event-container">
         <h1>{{event.title}}</h1>
-        <img :src="event.image"/>
+        <div class="image-container">
+            <img :src="event.image"/>
+        </div>
         <div class="d-flex justify-content-center no_hover">
             <date-range-button :start="event.startDate" :end="event.endDate"/>
         </div>
@@ -24,12 +26,20 @@ export default {
 .event-container {
     border-width: 3px;
     height: 100%;
+    max-height: 400px;
+    width: 300px;
+}
+
+.image-container {
+    width: 200px;
+    height: 200px;
+    padding-bottom: 10px;
+    margin: 10px auto;
 }
 
 img {
-    max-width: 300px;
-    max-height: 300px;
     width: 100%;
+    
 }
 
 .event-description {
