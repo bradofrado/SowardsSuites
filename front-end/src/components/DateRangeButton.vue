@@ -1,8 +1,10 @@
 <template>
     <button :class="'button-secondary rounded d-inline-flex justify-content-center' + (this.$listeners && this.$listeners.click ? '' : ' no-hover')" v-b-tooltip.hover @click="$emit('click')"  :title="title" >
         <span class="calendar-list-date-value">{{dateFormat(start)}}</span>
-        <icon name="arrowRight"/>
-        <span class="calendar-list-date-value">{{dateFormat(end)}}</span>
+        <template v-if="start != end">
+            <icon name="arrowRight"/>
+            <span class="calendar-list-date-value">{{dateFormat(end)}}</span>            
+        </template>
         <icon :name="icon"/>
     </button>
 </template>
