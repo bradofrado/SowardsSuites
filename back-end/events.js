@@ -19,7 +19,23 @@ const eventsSchema = new mongoose.Schema({
     },
     title: String,
     description: String,
-    image: String 
+    image: String,
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
+});
+
+eventsSchema.methods.isValid = function() {
+    const now = new Date();
+
+    return this.endDate >= now;
+}
+
+//Every find query should only returned the not deleted
+eventsSchema.pre(/^find/, function(next) {
+    this.where({isDeleted: false});
+    next();
 });
 
 const Event = mongoose.model('Event', eventsSchema);
@@ -28,6 +44,16 @@ router.get('/', (req, res) => {
     try {
         Event.find().sort({startDate: 1}).populate('user').exec(async (err, events) => {
             if (err) throw err;
+
+            //Delete the events that are passed their dates
+            for (let i = events.length - 1; i >= 0; i--) {
+                if (!events[i].isValid()) {
+                    events[i].isDeleted = true;
+                    await events[i].save();
+
+                    events.splice(i,1);
+                }                
+            }
 
             res.send(events);
         });
@@ -122,9 +148,20 @@ router.delete('/:id', validUser, async (req, res) => {
             });
         }
 
-        deletePhoto(event.image);
-
-        await event.delete();
+        //Admins can do hard deletes. Other wise just mark it as deleted
+        if (req.query.hard === 'true') {
+            if (req.user.roles.includes('Admin')) {
+                deletePhoto(event.image);
+                await event.delete();
+            } else {
+                return res.status(400).send({
+                    message: "Only admins can do a hard delete"
+                });
+            }
+        } else {
+            event.isDeleted = true;
+            await event.save();
+        }
 
         res.sendStatus(200);
     } catch (error) {

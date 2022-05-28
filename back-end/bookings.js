@@ -18,7 +18,11 @@ const bookingSchema = new mongoose.Schema({
     rooms: [{
         type: mongoose.Schema.ObjectId,
         ref: "Room"
-    }]
+    }],
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 });
 
 bookingSchema.methods.alreadyExists = async function() {
@@ -96,6 +100,12 @@ bookingSchema.methods.hasRooms = function(rooms) {
     });
 }
 
+//Every find query should only returned the not deleted
+bookingSchema.pre(/^find/, function(next) {
+    this.where({isDeleted: false});
+    next();
+});
+
 const Booking = mongoose.model('Booking', bookingSchema);
 
 
@@ -129,7 +139,8 @@ router.get('/', async (req, res) => {
             //Git rid of the dates that are passed their bookings or don't have the given rooms
             for (let i = bookings.length - 1; i >= 0; i--) {
                 if (!bookings[i].isValid()) {
-                    await bookings[i].delete();
+                    bookings[i].isDeleted = true;
+                    await bookings[i].save();
                     bookings.splice(i,1);
                 }
 
@@ -196,7 +207,7 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
         //If this is admin, just find the booking
         if (isAdmin) {
             booking = await Booking.findOne({
-                _id: req.params.id                
+                _id: req.params.id              
             });            
         //Otherwise the booking has to be tied to the current user
         } else {
@@ -261,7 +272,19 @@ router.delete('/:id', validUser, async (req, res) => {
             });
         }
 
-        await booking.delete();
+        //Admins can do hard deletes. Other wise just mark it as deleted
+        if (req.query.hard === 'true') {
+            if (isAdmin) {
+                await booking.delete();
+            } else {
+                return res.status(400).send({
+                    message: "Only admins can do a hard delete"
+                });
+            }
+        } else {
+            booking.isDeleted = true;
+            await booking.save();
+        }
 
         res.sendStatus(200);
     } catch (error) {
