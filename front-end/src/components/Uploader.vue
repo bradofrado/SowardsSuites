@@ -23,7 +23,10 @@
         <p v-if="submitError" class="error">{{submitError}}</p>
         <fieldset class="buttons">
             <button type="button" @click="$emit('close')" class="button button-secondary">Close</button>
-            <button type="submit" class="button button-primary">Submit</button>
+            <div>
+                <button v-if="$listeners.delete" type="button" @click="$emit('delete')" class="button button-secondary">Delete</button>
+                <button type="submit" class="button button-primary ml-0">Submit</button>
+            </div>
         </fieldset>
     </form>
 </div>

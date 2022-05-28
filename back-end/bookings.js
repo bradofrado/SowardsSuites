@@ -255,6 +255,12 @@ router.delete('/:id', validUser, async (req, res) => {
             });
         }
 
+        if (!booking) {
+            return res.status(400).send({
+                message: "Either could not find booking with id " + req.params.id + " or invalid user"
+            });
+        }
+
         await booking.delete();
 
         res.sendStatus(200);

@@ -45,6 +45,7 @@ export default {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     grid-auto-rows: minmax(100px, auto);
+    margin-top: 20px;
 }
 
 .events-view-container {

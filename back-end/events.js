@@ -109,6 +109,31 @@ router.put('/:id', validUser, upload.single('image'), async (req, res) => {
     }
 });
 
+router.delete('/:id', validUser, async (req, res) => {
+    try {
+        const event = await Event.findOne({
+            _id: req.params.id,
+            user: req.user
+        });
+
+        if (!event) {
+            return res.status(400).send({
+                message: "Either could not find event with id " + req.params.id + " or invalid user"
+            });
+        }
+
+        deletePhoto(event.image);
+
+        await event.delete();
+
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+    
+})
+
 module.exports = {
     routes: router,
     model: Event,

@@ -8,13 +8,13 @@
         <div class="home-buttons">
             <ImageButton to="/rooms" name="Rooms" img="/images/room2.jpg"/>
             <ImageButton to="/book" name="Book" img="/images/Calendar.png" dark/>
-            <ImageButton to="/about" name="Upcoming Events"/>
+            <ImageButton to="/events" name="Events"/>
         </div>
     </div>
     <div class="events-outer">
         <h1>Events</h1>
         <div class="events-container">
-            <event-calendar :events="events" @new="onSubmitEvent"/>
+            <event-calendar :events="events" @new="getEvents" @delete="getEvents"/>
             <div>
                 <h4>Upcoming Event</h4>
                 <event :event="featuredEvent"/>

@@ -108,7 +108,7 @@ button {
 }
 
 .button {
-    min-height: 40px;
+    min-height: 40px !important;
     min-width: 75px;
 }
 

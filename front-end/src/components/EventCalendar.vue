@@ -8,12 +8,11 @@
             </button>
         </template>
     </calendar>
-    <!-- <p v-if="edit" class="text-center">Editing event for <date-range-button @click="edit = null" title="cancel" :start="edit.startDate" :end="edit.endDate" icon="cancel"/></p> -->
     <div class="center w-125 d-flex justify-content-center">
         <button :class="'button button-primary h-2 mw-125 w-100'" @click="onNew">{{(edit ? 'Edit' : 'Create')}} Event</button>
     </div>
     <modal :show="show">
-        <uploader :inputs="inputs" @submit="onUpload" :title="title" @close="show = false, edit = false" :error="error"/>
+        <uploader :inputs="inputs" :title="title" @submit="onUpload" @delete="onDelete" @close="show = false, edit = false" :error="error"/>
     </modal>
 </div>
 </template>
@@ -145,6 +144,23 @@ export default {
                 console.log(error);
                 this.error = "Error: " + error.response.data.message;
             }                        
+        },
+        async onDelete() {
+            try {
+                if (!this.edit) {
+                    return;
+                }
+
+                await axios.delete('/api/events/' + this.edit._id);
+
+                this.show = false;
+                this.edit = null;
+                this.$emit('delete');
+            } catch(error) {
+                console.log(error);
+                this.error = "Error: " + error.response.data.message;
+            }
+            
         },
         onNew() {
             this.show = true;
