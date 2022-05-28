@@ -42,7 +42,7 @@ export default {
 <style scoped>
 .events-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 20px;
     grid-auto-rows: minmax(100px, auto);
     margin-top: 20px;
@@ -50,5 +50,14 @@ export default {
 
 .events-view-container {
 
+}
+
+@media only screen and (min-width: 960px) {
+    .events-container {
+        grid-template-columns: repeat(3, 1fr);
+        /* gap: 20px;
+        grid-auto-rows: minmax(100px, auto);
+        margin-top: 20px; */
+    }
 }
 </style>

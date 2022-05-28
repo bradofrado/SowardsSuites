@@ -87,10 +87,11 @@ export default {
     display: flex;
     justify-content:space-around;
     margin-top: 20px;
+    flex-direction: column;
 }
 
 .events-container > div {
-    margin: 0 20px;
+    margin: 10px 20px;
 }
 
 h4 {
@@ -104,6 +105,10 @@ h4 {
 @media only screen and (min-width: 960px) {
     .home-buttons {
             flex-direction: row;
+    }
+
+    .events-container {
+        flex-direction: row;
     }
 }
 </style>

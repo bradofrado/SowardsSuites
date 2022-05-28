@@ -59,9 +59,8 @@ export default {
 }
 
 .modal-container {
-  width: 50%;
   height: max-content;
-  margin-top: 80px;
+  margin-top: 10px;
   padding: 20px 30px;
   background-color: #fff;
   border-radius: 2px;
@@ -92,4 +91,11 @@ export default {
 }
 
 /* Form */
+@media only screen and (min-width: 960px) {
+    .modal-container {
+        width: 50%;
+        margin-top: 40px;
+        flex-direction: row;
+    }
+}
 </style>

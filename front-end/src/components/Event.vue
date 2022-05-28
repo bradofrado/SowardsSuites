@@ -28,6 +28,7 @@ export default {
     height: 100%;
     max-height: 400px;
     width: 300px;
+    margin: auto;
 }
 
 .image-container {

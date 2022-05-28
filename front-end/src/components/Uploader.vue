@@ -154,6 +154,7 @@ export default {
 .imageInputContainer {
     display: flex;
     justify-content: space-around;
+    flex-direction: column;
 }
 
 input, textarea {
@@ -167,5 +168,11 @@ input, textarea {
 
 .error {
     color: red;
+}
+
+@media only screen and (min-width: 960px) {
+    .imageInputContainer {
+        flex-direction: row;
+    }
 }
 </style>

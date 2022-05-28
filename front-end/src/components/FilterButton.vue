@@ -31,8 +31,8 @@ export default {
 <style scoped>
 .toggle {
     border-radius: 20px;
-    min-height: 24px;
-    height: 24px;
+    min-height: 24px !important;
+    height: 1em;
     display: inline-flex;
 }
 
