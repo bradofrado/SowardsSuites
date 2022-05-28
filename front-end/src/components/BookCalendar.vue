@@ -1,6 +1,6 @@
 <template>
 <div>
-    <calendar @dayclick="onDayClick" v-model="range" :days="days" :edit="editDate" :screens="screens">
+    <calendar class="center" @dayclick="onDayClick" v-model="range" :days="days" :edit="editDate" :screens="screens">
         <template v-for="(index, name) in $scopedSlots" v-slot:[name]="data">
             <slot :name="name" v-bind="data"></slot>
         </template>
@@ -157,9 +157,8 @@ export default {
             try {
                 this.loading = true;
 
-                //Make the time the end of day of the local time, then convert that to utc (back-end is in utc time)
-                const start = dayjs.utc(this.range.start.setHours(23, 59, 59, 999));
-                const end = dayjs(this.range.end.setHours(23, 59, 59, 999));
+                const start = this.range.start;
+                const end = this.range.end;
                 if (this.edit) {
                     await axios.put('/api/bookings/' + this.edit._id, {
                         start: start,

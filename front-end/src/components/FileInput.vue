@@ -1,7 +1,7 @@
 <template>
-    <div class="imageInput" @click="chooseImage">
-        <img v-if="theUrl" :src="theUrl" />
-        <div v-if="!theUrl" class="placeholder">
+    <div class="imageInput" @click="chooseImage" >
+        <img v-if="url" :src="url" />
+        <div v-if="!url" class="placeholder">
             {{title}}
         </div>
         <input class="fileInput" ref="fileInput" type="file" @input="fileChanged">
@@ -12,22 +12,22 @@
 export default {
     props: {
         title: String,
-        url: String
+        value: [String, File]
     },
     data() {
         return {
-            theUrl: ""
+            url: ""
         }
     },
     created () {
-        this.theUrl = this.$props.url;
+        this.url = typeof this.$props.value === File ? this.$props.value.webkitRelativePath : this.$props.value;
     },
     methods: {
         fileChanged(event) {
             const file = event.target.files[0];
-            this.theUrl = URL.createObjectURL(file);
+            this.url = URL.createObjectURL(file);
 
-            this.$emit('onUpload', file);
+            this.$emit('input', file);
         },
         chooseImage() {
             this.$refs.fileInput.click()
@@ -68,5 +68,6 @@ export default {
 
 img {
   width: 200px;
+  max-height: 200px;
 }
 </style>

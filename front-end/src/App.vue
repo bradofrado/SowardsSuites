@@ -108,7 +108,7 @@ button {
 }
 
 .button {
-    min-height: 40px;
+    min-height: 40px !important;
     min-width: 75px;
 }
 
@@ -175,4 +175,30 @@ button {
     max-width: 125px;
 }
 
+.center {
+    display: block;
+    margin: 10px auto;
+}
+
+.popover-label {
+    background-color: transparent;
+    color: inherit;
+    font-weight: inherit;
+    display: inline-flex;
+    align-items: center;
+    padding: 0px;
+}
+
+.popover-label :first-child {
+    margin-right: 5px;
+}
+
+.popover-label:hover {
+    color: #b6b6b6;
+}
+
+.no-hover:hover {
+    background-color: #f7fafc;
+    cursor: default;
+}
 </style>

@@ -1,157 +1,104 @@
 <template>
 <div>
-    <form class="pure-form" @submit.prevent="upload">
-        <legend v-if="room">Edit {{room.name}}</legend>
-        <legend v-else>Add a Room</legend>
-        <fieldset>
-            <input v-model="name" placeholder="Name">
-        </fieldset>
-        <fieldset>
-            <textarea v-model="description" placeholder="Description"></textarea>
-        </fieldset>
-        <fieldset>
-            <div class="imageInputContainer">
-                <file-input :url="image" title="Choose an Image" @onUpload="onImageUpload"/>
-                <file-input :url="thumbnail" title="Choose a Thumbnail" @onUpload="onThumbnailUpload"/>
-            </div>
-            <p v-if="error" class="error">{{error}}</p>
-        </fieldset>
+    <form class="pure-form" @submit.prevent="onSubmit">
+        <legend>{{title}}</legend>
+        <template v-for="(input, index) of theInputs" >
+            <fieldset v-if="input.type == 'input'" :key="index">
+                <input v-model="input.value" :placeholder="input.title"/>                
+            </fieldset>
+            <fieldset v-else-if="input.type == 'textarea'" :key="index">
+                <input v-model="input.value" :placeholder="input.title"/>                
+            </fieldset>                 
+        </template>
+        <div class="imageInputContainer">
+            <template v-for="(input, index) of theInputs" >
+                <fieldset v-if="input.type == 'file'" :key="index">
+                    <file-input v-model="input.value" :title="input.title" />                            
+                </fieldset>
+                <fieldset v-else-if="input.type == 'calendar'" :key="index">
+                    <calendar v-model="input.value" />        
+                </fieldset>        
+            </template>
+        </div>
+        <p v-if="submitError" class="error">{{submitError}}</p>
         <fieldset class="buttons">
-            <button type="button" @click="close" class="button button-secondary">Close</button>
-            <button type="submit" class="button button-primary">Submit</button>
+            <button type="button" @click="$emit('close')" class="button button-secondary">Close</button>
+            <div>
+                <button v-if="$listeners.delete" type="button" @click="$emit('delete')" class="button button-secondary">Delete</button>
+                <button type="submit" class="button button-primary ml-0">Submit</button>
+            </div>
         </fieldset>
     </form>
 </div>
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 import FileInput from "@/components/FileInput.vue"
+import {Copy} from '@/dateFormat.js';
+import Calendar from './Calendar.vue';
 
 export default {
     name: 'Uploader',
     props: {
-        room: Object
+        //room: Object,
+        title: String,
+        inputs: Object,
+        error: String,
     },
     components: {
-        FileInput
+        FileInput,
+        Calendar,
     },
     data() {
         return {
-            name: '',
-            description: '',
-            image: null,
-            thumbnail: null,
-            error: '',
+            submitError: '',
+            theInputs: {}
         }
     },
     created() {
-        this.name = this.$props.room ? this.$props.room.name : '';
-        this.description = this.$props.room ? this.$props.room.description : '';
-        this.image = this.$props.room ? this.$props.room.image : '';
-        this.thumbnail = this.$props.room ? this.$props.room.thumbnail : '';
+        this.submitError = this.$props.error;
+        this.theInputs = Copy(this.$props.inputs);
+    },
+    watch: {
+        error(error) {
+            this.submitError = error;
+        }
     },
     methods: {
-        onImageUpload(image) {
-            this.image = image;
-        },
-        onThumbnailUpload(thumbnail) {
-            this.thumbnail = thumbnail;
-        },
-        close() {
-            this.$emit('close');
-        },
-        async upload() {
-            try {
-                if (!this.image || !this.thumbnail || !this.name || !this.description) {
-                    this.error = "Please fill out all fields";
+        // onImageUpload(image) {
+        //     this.image = image;
+        // },
+        // onThumbnailUpload(thumbnail) {
+        //     this.thumbnail = thumbnail;
+        // },        
+        onSubmit() {
+            let output = {};    
+            let inputsChanged = false;
+            for (const name in this.theInputs) {
+                const input = this.theInputs[name];
+
+                //Validate all of the fields
+                //TODO: highlight the exact input in red
+                if (input.required && !input.value) {
+                    this.submitError = "Please fill out all fields";
                     return;
                 }
 
-                const formData = new FormData();
-                console.log(this.image);
-
-                if (typeof this.image !== 'string')
-                    formData.append('image', this.image, this.image.name);
-                if (typeof this.thumbnail !== 'string')
-                    formData.append('thumbnail', this.thumbnail, this.thumbnail.name);
-                formData.append('name', this.name);
-                formData.append('description', this.description);
-
-                const room = this.$props.room;
-
-                if (room) {
-                    await axios.put('/api/rooms/' + room._id, formData);
-                }
-                else {
-                    await axios.post("/api/rooms", formData);
+                if (input.value !== this.$props.inputs[name].value) {
+                    inputsChanged = true;
                 }
 
-                this.thumbnail = null;
-                this.image = null;
-                this.name = "";
-                this.description = "";
-                this.$emit('uploadFinished');
-            } catch (error) {
-                console.log(error);
-                this.error = "Error: " + error.response.data.message;
+                output = {...output, [name]: input.value };
             }
+
+            this.$emit('submit', output, inputsChanged);
         }
     }
 }
 </script>
 
 <style scoped>
-/* Modals */
-.modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, .3);
-  transition: opacity 0.5s ease;
-  display: flex;
-  transition: background 0.2s ease-in-out, height 1s ease-in-out;
-  transition: height 0.2s ease-in-out, width 0.2s ease-in-out;
-  justify-content: center;
-  transition-timing-function: cubic-bezier(0.64, 0.57, 0.67, 1.53);
-}
-
-.modal-container {
-  width: 50%;
-  height: max-content;
-  margin-top: 80px;
-  padding: 20px 30px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  transition: all 0.5s ease;
-}
-
-/*
-* The following styles are auto-applied to elements with
-* transition="modal" when their visibility is toggled
-* by Vue.js.
-*
-* You can easily play with the modal transition by editing
-* these styles.
-*/
-.modal-enter {
-  opacity: 0;
-}
-
-.modal-leave-active {
-  opacity: 0;
-}
-
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
-
 /* Form */
 
 .pure-form legend {
@@ -206,6 +153,7 @@ export default {
 
 .imageInputContainer {
     display: flex;
+    justify-content: space-around;
 }
 
 input, textarea {
@@ -215,5 +163,9 @@ input, textarea {
 .buttons {
   display: flex;
   justify-content: space-between;
+}
+
+.error {
+    color: red;
 }
 </style>
