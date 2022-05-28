@@ -49,7 +49,7 @@ export default {
 }
 
 .events-view-container {
-
+    
 }
 
 @media only screen and (min-width: 960px) {

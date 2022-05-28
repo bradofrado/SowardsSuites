@@ -15,7 +15,7 @@
         <h1>Events</h1>
         <div class="events-container">
             <event-calendar :events="events" @new="getEvents" @delete="getEvents"/>
-            <div>
+            <div class="upcoming-event">
                 <h4>Upcoming Event</h4>
                 <event :event="featuredEvent"/>
             </div>
@@ -100,6 +100,11 @@ h4 {
 
 .events-outer {
     padding-top: 20px;
+}
+
+.upcoming-event {
+    display: flex;
+    flex-direction: column;
 }
 
 @media only screen and (min-width: 960px) {

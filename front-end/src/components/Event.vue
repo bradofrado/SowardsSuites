@@ -26,7 +26,6 @@ export default {
 .event-container {
     border-width: 3px;
     height: 100%;
-    max-height: 400px;
     width: 300px;
     margin: auto;
 }
