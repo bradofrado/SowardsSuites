@@ -31,6 +31,9 @@
                     <div class="form-field">
                         <input type='text' placeholder="Last Name" v-model="lastname"/>
                     </div>
+                    <div class="form-field">
+                        <input type='text' placeholder="Email" v-model="email"/>
+                    </div>
                 </fieldset>
                 <fieldset>
                     <div class="form-field">
@@ -62,6 +65,7 @@ export default {
         return {
             password: "",
             username: "",
+            email: "",
             error: null,
             loggingIn: true
         }
@@ -88,6 +92,7 @@ export default {
         clearAll() {
             this.username = "";
             this.password = "";
+            this.email = "";
             this.firstname = "";
             this.lastname = "";
             this.error = "";
@@ -117,6 +122,7 @@ export default {
                 const response = await axios.post('/api/users', {
                     username: this.username,
                     password: this.password,
+                    email: this.email,
                     firstname: this.firstname,
                     lastname: this.lastname
                 });

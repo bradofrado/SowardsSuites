@@ -7,6 +7,7 @@ const router = express.Router();
 const userSchema = new mongoose.Schema({
     username: String,
     password: String,
+    email: String,
     firstname: String,
     lastname: String,
     roles: [{
@@ -42,6 +43,10 @@ userSchema.methods.toJSON = function() {
     var obj = this.toObject();
     delete obj.password;
     return obj;
+}
+
+userSchema.methods.hasRole = function(role) {
+    return this.roles.includes(role);
 }
 
 const User = mongoose.model('User', userSchema);
@@ -102,12 +107,18 @@ const validUser = function(roles) {
     }
 }
 
+const getRoles = async function(roles) {
+    const users = await User.find();
+
+    return users.filter(x => roles.every(r => x.hasRole(r)));
+}
+
 /* Endpoints */
 
 router.post('/', async (req, res) => {
-    if (!req.body.username || !req.body.password) {
+    if (!req.body.username || !req.body.password || !req.body.email) {
         return res.status(400).send({
-            message: "username and password are required"
+            message: "username, password, and email are required"
         });
     }
 
@@ -130,6 +141,7 @@ router.post('/', async (req, res) => {
         const user = new User({
             firstname: req.body.firstname,
             lastname: req.body.lastname,
+            email: req.body.email,
             username: req.body.username,
             password: req.body.password
         });
@@ -212,5 +224,6 @@ router.delete("/", validUser, async (req, res) => {
 module.exports = {
     routes: router,
     model: User,
-    valid: validUser
+    valid: validUser,
+    getRoles: getRoles
 }
