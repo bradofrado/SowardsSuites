@@ -8,5 +8,6 @@ const port = process.env.SERVER_PORT;
 module.exports = {
     mongoConnection: mongoConnection,
     root: root,
-    port: port
+    port: port,
+    smtp_key: process.env.SMTP_KEY
 }

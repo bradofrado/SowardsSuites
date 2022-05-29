@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const dayjs = require('dayjs');
 const userController = require('./users.js');
+const env = require('./env.js');
 
 let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -8,7 +9,7 @@ let transporter = nodemailer.createTransport({
     secure: false,
     auth: {
         user: 'bradofrado@gmail.com',
-        pass: 'uazkrgfcxhdfmlro'
+        pass: env.smtp_key
     }
 });
 
