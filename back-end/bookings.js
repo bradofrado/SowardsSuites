@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const moment = require('moment');
+const mailer = require('./email-service.js');
 
 const router = express.Router();
 
@@ -166,15 +167,16 @@ router.post('/', validUser, checkDate, async (req, res) => {
             });
         }
 
+        //Create a new booking
         const booking = new Booking({
             startDate: req.body.start,
             endDate: req.body.end,
             user: req.user,
             rooms: req.body.rooms
-        });
+        }, );
          
         
-
+        //See if these rooms are already booked
         if (await booking.alreadyExists()) {
             return res.status(400).send({
                 message: "One or more rooms is already booked"
@@ -182,6 +184,10 @@ router.post('/', validUser, checkDate, async (req, res) => {
         }
 
         await booking.save();
+
+        //We need to populate the rooms before sending an email
+        await booking.populate('rooms');
+        await mailer.sendNewBookingEmails(booking);
 
         console.log("sending booking");
     
@@ -200,7 +206,7 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
             });
         }
 
-        const isAdmin = req.user.roles.includes('Admin');
+        const isAdmin = req.user.hasRole('Admin');
 
         let booking;
         
