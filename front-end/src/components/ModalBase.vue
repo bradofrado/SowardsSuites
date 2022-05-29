@@ -56,6 +56,7 @@ export default {
   transition: height 0.2s ease-in-out, width 0.2s ease-in-out;
   justify-content: center;
   transition-timing-function: cubic-bezier(0.64, 0.57, 0.67, 1.53);
+  overflow: auto;
 }
 
 .modal-container {

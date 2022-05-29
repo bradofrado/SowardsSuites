@@ -148,6 +148,7 @@ export default {
         async onDelete() {
             try {
                 if (!this.edit) {
+                    this.show = false;
                     return;
                 }
 
