@@ -8,7 +8,7 @@
         <div class="home-buttons">
             <ImageButton to="/rooms" name="Rooms" img="/images/room2.jpg"/>
             <ImageButton to="/book" name="Book" img="/images/Calendar.png" dark/>
-            <ImageButton to="/events" name="Events"/>
+            <ImageButton to="/events" name="Events" :img="featuredEvent && featuredEvent.image"/>
         </div>
     </div>
     <div class="events-outer">
@@ -17,7 +17,8 @@
             <event-calendar :events="events" @new="getEvents" @delete="getEvents"/>
             <div class="upcoming-event">
                 <h4>Upcoming Event</h4>
-                <event :event="featuredEvent"/>
+                <event v-if="featuredEvent" :event="featuredEvent"/>
+                <p v-else>No upcoming events</p>
             </div>
         </div>
     </div>
@@ -105,6 +106,7 @@ h4 {
 .upcoming-event {
     display: flex;
     flex-direction: column;
+    text-align: center;
 }
 
 @media only screen and (min-width: 960px) {

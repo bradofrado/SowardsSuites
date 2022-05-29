@@ -1,5 +1,8 @@
 <template>
     <div v-b-tooltip.hover :title="title" :class="'image-button-container' + (dark ? ' dark' : '')">
+        <div v-if="img" class="image-container">
+            <img :src="img">
+        </div>
         <router-link v-if="to" :class="'image-button image-hover center-center' + (img ? ' no-color ' : '') + (buttonClass ? buttonClass : '')" :to="to">            
             <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </router-link>
@@ -9,7 +12,6 @@
         <div v-else :class="'image-button center-center' + (img ? ' no-color' : '')">
             <div class="image-button-text center-center" >{{name ? name : ''}}</div>
         </div>
-        <img v-if="img" :src="img">
     </div>
 </template>
 
@@ -39,9 +41,18 @@ export default {
 </script>
 
 <style scoped>
-img {
-    width: 100%;
+
+.image-container {
+    height: 100%;
+    overflow: hidden;
     border-radius: 8px;
+}
+
+img {
+    height: 100%;
+    border-radius: 8px;
+    margin-left: 50%;
+    transform: translateX(-50%);
 }
 
 .image-button-container {
