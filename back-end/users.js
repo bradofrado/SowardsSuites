@@ -45,8 +45,8 @@ userSchema.methods.toJSON = function() {
     return obj;
 }
 
-userSchema.methods.hasRole = function(role) {
-    return this.roles.includes(role);
+userSchema.methods.hasRoles = function(roles) {
+    return roles.every(role => this.roles.includes(role));
 }
 
 const User = mongoose.model('User', userSchema);
@@ -110,7 +110,7 @@ const validUser = function(roles) {
 const getRoles = async function(roles) {
     const users = await User.find();
 
-    return users.filter(x => roles.every(r => x.hasRole(r)));
+    return users.filter(x => x.hasRoles(roles));
 }
 
 /* Endpoints */

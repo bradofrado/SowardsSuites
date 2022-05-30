@@ -2,7 +2,7 @@
 <div>
     <calendar class="center" :days="theEvents" :screens="2" v-model="range">
         <template #label="{label, data, hide}">
-            <button class="popover-label" v-if="(user && myEvents.includes(data))" @click="hide(), onEdit(data)">
+            <button class="popover-label" v-if="isAdmin || (user && myEvents.includes(data))" @click="hide(), onEdit(data)">
                 <span>{{label}}</span>
                 <icon class="light" name="edit"/>
             </button>
@@ -117,6 +117,9 @@ export default {
         user() {
             return this.$root.$data.user;
         },
+        isAdmin() {
+            return this.user && this.user.roles.includes("Admin");
+        }
     },
     methods: {
         async onUpload(outputs) {

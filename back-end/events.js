@@ -99,10 +99,22 @@ router.put('/:id', validUser, upload.single('image'), async (req, res) => {
             });
         }
 
-        const event = await Event.findOne({
-            _id: req.params.id,
-            user: req.user
-        });
+        const isAdmin = req.user.hasRoles(['Admin']);
+
+        let event;
+        
+        //If this is admin, just find the event
+        if (isAdmin) {
+            event = await Event.findOne({
+                _id: req.params.id              
+            });            
+        //Otherwise the Event has to be tied to the current user
+        } else {
+            event = await Event.findOne({
+                _id: req.params.id,
+                user: req.user
+            });
+        }
 
         if (!event) {
             return res.status(400).send({
@@ -137,10 +149,22 @@ router.put('/:id', validUser, upload.single('image'), async (req, res) => {
 
 router.delete('/:id', validUser, async (req, res) => {
     try {
-        const event = await Event.findOne({
-            _id: req.params.id,
-            user: req.user
-        });
+        const isAdmin = req.user.hasRoles(['Admin']);
+
+        let event;
+        
+        //If this is admin, just find the event
+        if (isAdmin) {
+            event = await Event.findOne({
+                _id: req.params.id              
+            });            
+        //Otherwise the Event has to be tied to the current user
+        } else {
+            event = await Event.findOne({
+                _id: req.params.id,
+                user: req.user
+            });
+        }
 
         if (!event) {
             return res.status(400).send({
