@@ -188,13 +188,4 @@ export default {
     border-radius: 2px;
     box-shadow: 0 0 3px 1px #78b7f1;
 }
-
-.error-text {
-    display: inline;
-    padding: 5px 20px;
-    border-radius: 30px;
-    font-size: 10px;
-    background-color: #d9534f;
-    color: #fff;
-}
 </style>

@@ -145,7 +145,12 @@ export default {
                 this.$emit('new');
             } catch (error) {
                 console.log(error);
-                this.error = "Error: " + error.response.data.message;
+                if (error.response.data.message) {
+                    this.error = error.response.data.message;
+                } else {
+                    this.error = "Internal service error. If the problem persists"
+                }
+                
             }                        
         },
         async onDelete() {

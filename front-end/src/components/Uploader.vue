@@ -20,7 +20,7 @@
                 </fieldset>        
             </template>
         </div>
-        <p v-if="submitError" class="error">{{submitError}}</p>
+        <p v-if="submitError" class="error-text mt-2">{{submitError}}</p>
         <fieldset class="buttons">
             <button type="button" @click="$emit('close')" class="button button-secondary">Close</button>
             <div>
@@ -111,7 +111,6 @@ export default {
 }
 
 .pure-form fieldset {
-    margin: 0;
     padding: 0.35em 0 0.75em;
     border: 0;
 }
@@ -164,6 +163,7 @@ input, textarea {
 .buttons {
   display: flex;
   justify-content: space-between;
+  margin-top: 10px;
 }
 
 .error {

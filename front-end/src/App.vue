@@ -201,4 +201,13 @@ button {
     background-color: #f7fafc;
     cursor: default;
 }
+
+.error-text {
+    display: inline;
+    padding: 5px 20px;
+    border-radius: 30px;
+    font-size: 10px;
+    background-color: #d9534f;
+    color: #fff;
+}
 </style>
