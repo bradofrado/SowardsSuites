@@ -59,7 +59,7 @@ export default {
 
                 this.events = response.data;
             } catch(err) {
-                console.log(err);
+                return false;
             }
         },
         async onSubmitEvent() {

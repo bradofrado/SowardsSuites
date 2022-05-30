@@ -72,7 +72,6 @@ export default {
 
                 return true;
             } catch(error) {
-                //console.log(error);
                 return false;
             }
         },
@@ -118,8 +117,11 @@ export default {
                 this.show = false;
                 await this.getRooms();
             } catch (error) {
-                console.log(error);
-                this.error = "Error: " + error.response.data.message;
+                if (error.response.data.message) {
+                    this.error = error.response.data.message;
+                } else {
+                    this.error = "Internal service error. If the problem persists"
+                }
             }            
         },
         onEdit(room) {
@@ -140,7 +142,11 @@ export default {
 
                 await this.getRooms();
             } catch(error) {
-                console.log(error);
+                if (error.response.data.message) {
+                    this.error = error.response.data.message;
+                } else {
+                    this.error = "Internal service error. If the problem persists"
+                }
             }
         }
     },

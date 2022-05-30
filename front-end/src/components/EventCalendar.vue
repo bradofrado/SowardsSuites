@@ -144,7 +144,6 @@ export default {
                 this.edit = null;
                 this.$emit('new');
             } catch (error) {
-                console.log(error);
                 if (error.response.data.message) {
                     this.error = error.response.data.message;
                 } else {
@@ -166,8 +165,11 @@ export default {
                 this.edit = null;
                 this.$emit('delete');
             } catch(error) {
-                console.log(error);
-                this.error = "Error: " + error.response.data.message;
+                if (error.response.data.message) {
+                    this.error = error.response.data.message;
+                } else {
+                    this.error = "Internal service error. If the problem persists"
+                }
             }
             
         },
