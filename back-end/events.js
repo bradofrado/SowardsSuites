@@ -174,7 +174,7 @@ router.delete('/:id', validUser, async (req, res) => {
 
         //Admins can do hard deletes. Other wise just mark it as deleted
         if (req.query.hard === 'true') {
-            if (req.user.roles.includes('Admin')) {
+            if (req.user.hasRole('Admin')) {
                 deletePhoto(event.image);
                 await event.delete();
             } else {
