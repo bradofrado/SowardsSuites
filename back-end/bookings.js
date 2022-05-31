@@ -206,7 +206,7 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
             });
         }
 
-        const isAdmin = req.user.hasRole('Admin');
+        const isAdmin = req.user.hasRoles(['Admin']);
 
         let booking;
         
