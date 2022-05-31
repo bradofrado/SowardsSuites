@@ -9,5 +9,6 @@ module.exports = {
     mongoConnection: mongoConnection,
     root: root,
     port: port,
-    smtp_key: process.env.SMTP_KEY
+    smtp_key: process.env.SMTP_KEY,
+    mode: process.env.NODE_ENV
 }

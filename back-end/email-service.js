@@ -18,6 +18,11 @@ function dateFormat(date) {
 }
 
 const sendEmail = async (to, subject, text) => {
+    //Don't send emails in development mode
+    if (env.mode === 'development') {
+        return;
+    }
+
     try {
         // send mail with defined transport object
         let info = await transporter.sendMail({
