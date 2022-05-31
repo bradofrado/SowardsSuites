@@ -230,6 +230,10 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
             });
         }
 
+        //Save the old dates
+        const oldStart = booking.startDate;
+        const oldEnd = booking.endDate;
+
         booking.startDate = req.body.start;
         booking.endDate = req.body.end;
         booking.rooms = req.body.rooms
@@ -243,6 +247,9 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
         }
 
         await booking.save();
+
+        await booking.populate('rooms user');
+        await mailer.sendEditBookingEmails(booking, oldStart, oldEnd);
 
         console.log("sending booking");
     
