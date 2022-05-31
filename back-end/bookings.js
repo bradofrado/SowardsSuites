@@ -297,6 +297,9 @@ router.delete('/:id', validUser, async (req, res) => {
         } else {
             booking.isDeleted = true;
             await booking.save();
+
+            await booking.populate('rooms user');
+            await mailer.sendDeleteBookingEmails(booking);
         }
 
         res.sendStatus(200);

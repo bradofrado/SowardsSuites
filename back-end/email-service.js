@@ -113,6 +113,43 @@ const sendEditBookingEmails = async function(booking, oldStart, oldEnd) {
     }
 }
 
+const sendDeleteBookingEmails = async function(booking) {
+    if (!booking.user || !booking.user.firstname) {
+        throw Error("Booking must have user to send notification email");
+    }
+
+    const numRooms = booking.rooms.length;
+
+    if (!numRooms) {
+        throw Error("Booking must have rooms");
+    }
+    
+    const roomNames = booking.rooms.reduce((prev, curr, i) => {
+        prev += `${curr.name}`;
+
+        if (i < numRooms - 1) {
+            if (numRooms == 2) {
+                prev += ' and ';
+            } else if (i === numRooms - 2) {
+                prev += ', and ';
+            } else {
+                prev += ', ';
+            }
+        }
+
+        return prev;
+    }, '');
+
+    const subject = `Deleted Booking-${booking.user.firstname} ${booking.user.lastname}`;
+    const message = `${booking.user.firstname} just deleted his/her booking on ${dateFormat(booking.startDate)}-${dateFormat(booking.endDate)}.`
+    
+    const toSends = await userController.getRoles(['Notify']);
+
+    for (let i = 0; i < toSends.length; i++) {
+        await sendEmail(toSends[i].email, subject, message);
+    }
+}
+
 module.exports = {
     sendEmail: sendEmail,
     sendNewBookingEmails: sendNewBookingEmails,
