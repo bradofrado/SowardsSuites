@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const argon2 = require('argon2');
 
+const logger = require('./logging.js');
+
 const router = express.Router();
 
 const userSchema = new mongoose.Schema({
@@ -25,7 +27,7 @@ userSchema.pre('save', async function(next) {
         this.password = hash;
         next();
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         next(error);
     }
 });
@@ -127,12 +129,14 @@ router.post('/', async (req, res) => {
             username: req.body.username
         });
         if (existingUser) {
+            logger.error('Username already exists: ' + req.body.username);
             return res.status(403).send({
                 message: "username already exists"
             });
         }
 
         if (req.body.role) {
+            logger.error('Tried to specify role: ' + req.body.username);
             return res.status(403).send({
                 message: "Must be admin to specify role"
             })
@@ -149,11 +153,13 @@ router.post('/', async (req, res) => {
 
         req.session.userID = user._id;
 
+        logger.info('Created user: '+user.username, user._id);
+
         return res.send({
             user: user
         });
     } catch(error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         return res.sendStatus(500);
     }
 });
@@ -168,31 +174,40 @@ router.post('/login', async (req, res) => {
       });
   
     try {
-      //  lookup user record
-      const user = await User.findOne({
-        username: req.body.username
-      });
-      // Return an error if user does not exist.
-      if (!user)
-        return res.status(403).send({
-          message: "username or password is incorrect"
+        //  lookup user record
+        const user = await User.findOne({
+            username: req.body.username
         });
+
+        // Return an error if user does not exist.
+        if (!user) {
+            logger.error('Failed login: ' + req.body.username);
+
+            return res.status(403).send({
+                message: "username or password is incorrect"
+            });
+        }
   
-      // Return the SAME error if the password is wrong. This ensure we don't
-      // leak any information about which users exist.
-      if (!await user.comparePassword(req.body.password))
-        return res.status(403).send({
-          message: "username or password is incorrect"
-        });
+        // Return the SAME error if the password is wrong. This ensure we don't
+        // leak any information about which users exist.
+        if (!await user.comparePassword(req.body.password)) {
+            logger.error('Failed login: ' + req.body.username);
+
+            return res.status(403).send({
+                message: "username or password is incorrect"
+            });
+        }
 
         //set user session info
         req.session.userID = user._id;
+
+        logger.info('User logged in: ' + user.username, user._id);
   
       return res.send({
         user: user
       });
     } catch (error) {
-      console.log(error);
+      logger.error(error, req.session.userID);
       return res.sendStatus(500);
     }
 });
@@ -204,7 +219,7 @@ router.get('/', validUser, async (req, res) => {
         user: req.user
       });
     } catch (error) {
-      console.log(error);
+      logger.error(error, req.session.userID);
       return res.sendStatus(500);
     }
 });
@@ -212,11 +227,12 @@ router.get('/', validUser, async (req, res) => {
 // logout
 router.delete("/", validUser, async (req, res) => {
     try {
-      req.session = null;
-      res.sendStatus(200);
+        logger.info('User logged out: ' + req.user.username, req.user._id)
+        req.session = null;
+        res.sendStatus(200);
     } catch (error) {
-      console.log(error);
-      return res.sendStatus(500);
+        logger.error(error, req.session.userID);
+        return res.sendStatus(500);
     }
 });
 
