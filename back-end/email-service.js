@@ -5,8 +5,8 @@ const env = require('./env.js');
 
 let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    port: 465,
+    secure: true,
     auth: {
         user: 'bradofrado@gmail.com',
         pass: env.smtp_key
@@ -21,7 +21,7 @@ const sendEmail = async (to, subject, text) => {
     try {
         // send mail with defined transport object
         let info = await transporter.sendMail({
-            from: 'Sowards Suites', 
+            from: 'Sowards Suites <bradofrado@gmail.com>', 
             to: to, 
             subject: subject, 
             text: text, 
@@ -49,13 +49,19 @@ const sendNewBookingEmails = async (booking) => {
         prev += `${curr.name}`;
 
         if (i < numRooms - 1) {
-            prev += ', ';
+            if (numRooms == 2) {
+                prev += ' and ';
+            } else if (i === numRooms - 2) {
+                prev += ', and ';
+            } else {
+                prev += ', ';
+            }
         }
 
         return prev;
     }, '');
 
-    const subject = 'New Booking';
+    const subject = `New Booking-${booking.user.firstname} ${booking.user.lastname}`;
     const message = `${booking.user.firstname} just booked the room${numRooms > 1 ? 's' : ''} ${roomNames} from ${dateFormat(booking.startDate)} to ${dateFormat(booking.endDate)}`
     
     const toSends = await userController.getRoles(['Notify']);
