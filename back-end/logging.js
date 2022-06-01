@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const users = require('./users.js');
+const env = require('./env.js');
 
 const LoggingType = {
     info: 'info',
@@ -24,22 +25,12 @@ const logSchema = new mongoose.Schema({
 
 const Log = mongoose.model('Log', logSchema);
 
-const currentUsers = {};
-
-const getUser = async function(userId) {
-    if (!currentUsers[userId]) {
-        const user = await users.model.findOne({
-            _id: userId
-        });
-        if (!user) return null;
-
-        currentUsers[userId] = user;
-    }
-
-    return currentUsers[userId];
-}
-
 const newLog = async function(type, message, userId) {
+    //Don't log if it is development
+    if (env.isDevelopment) {
+        return;
+    }
+    
     try {
         userId = userId || null;
 
