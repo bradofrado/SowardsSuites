@@ -10,5 +10,5 @@ module.exports = {
     root: root,
     port: port,
     smtp_key: process.env.SMTP_KEY,
-    mode: process.env.NODE_ENV
+    isDevelopment: process.env.NODE_ENV === 'development'
 }

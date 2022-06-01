@@ -7,6 +7,7 @@ const router = express.Router();
 
 const rooms = require('./rooms.js');
 const users = require('./users.js');
+const logger = require('./logging.js');
 
 
 const bookingSchema = new mongoose.Schema({
@@ -150,11 +151,10 @@ router.get('/', async (req, res) => {
                 }
             }
 
-            console.log(bookings);
             res.send(bookings);
         });
     } catch (error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
 });
@@ -162,6 +162,7 @@ router.get('/', async (req, res) => {
 router.post('/', validUser, checkDate, async (req, res) => {
     try {
         if (!req.body.rooms || !req.body.end || !req.body.start) {
+            logger.error('Invalid body parameters for new booking', req.session.userID);
             return res.status(400).send({
                 message: "Invalid body parameters"
             });
@@ -178,6 +179,7 @@ router.post('/', validUser, checkDate, async (req, res) => {
         
         //See if these rooms are already booked
         if (await booking.alreadyExists()) {
+            logger.error('One or more rooms is already booked', req.session.userID);
             return res.status(400).send({
                 message: "One or more rooms is already booked"
             });
@@ -189,11 +191,11 @@ router.post('/', validUser, checkDate, async (req, res) => {
         await booking.populate('rooms');
         await mailer.sendNewBookingEmails(booking);
 
-        console.log("sending booking");
+        logger.info('Created new booking: ' + booking._id, req.user._id);
     
         res.send(booking);
     } catch (error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
 });
@@ -201,6 +203,7 @@ router.post('/', validUser, checkDate, async (req, res) => {
 router.put('/:id', validUser, checkDate, async (req, res) => {
     try {
         if (!req.body.rooms || !req.body.end || !req.body.start) {
+            logger.error('Invalid body parameters for editing booking', req.session.userID);
             return res.status(400).send({
                 message: "Invalid body parameters"
             });
@@ -225,6 +228,7 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
         
 
         if (!booking) {
+            logger.error('Either could not find booking with id ' + req.params.id + ' or invalid user', req.session.userID);
             return res.status(400).send({
                 message: "Either could not find booking with id " + req.params.id + " or invalid user"
             });
@@ -241,6 +245,7 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
         
 
         if (await booking.alreadyExists()) {
+            logger.error('One or more rooms is already booked', req.session.userID);
             return res.status(400).send({
                 message: "One or more rooms is already booked"
             });
@@ -251,11 +256,11 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
         await booking.populate('rooms user');
         await mailer.sendEditBookingEmails(booking, oldStart, oldEnd);
 
-        console.log("sending booking");
+        logger.info('Edited booking ' + booking._id, req.session.userID);
     
         res.send(booking);
     } catch (error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
 });
@@ -280,6 +285,7 @@ router.delete('/:id', validUser, async (req, res) => {
         }
 
         if (!booking) {
+            logger.error("Either could not find booking with id " + req.params.id + " or invalid user", req.session.userID);
             return res.status(400).send({
                 message: "Either could not find booking with id " + req.params.id + " or invalid user"
             });
@@ -289,7 +295,9 @@ router.delete('/:id', validUser, async (req, res) => {
         if (req.query.hard === 'true') {
             if (isAdmin) {
                 await booking.delete();
+                logger.info('Hard deleted booking ' + booking._id, req.session.userID);            
             } else {
+                logger.error("Only admins can do a hard delete for bookings", req.session.userID);
                 return res.status(400).send({
                     message: "Only admins can do a hard delete"
                 });
@@ -297,6 +305,7 @@ router.delete('/:id', validUser, async (req, res) => {
         } else {
             booking.isDeleted = true;
             await booking.save();
+            logger.info('Deleted booking ' + booking._id, req.session.userID);
 
             await booking.populate('rooms user');
             await mailer.sendDeleteBookingEmails(booking);
@@ -304,7 +313,7 @@ router.delete('/:id', validUser, async (req, res) => {
 
         res.sendStatus(200);
     } catch (error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
 });

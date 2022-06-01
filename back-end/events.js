@@ -4,6 +4,8 @@ const { deletePhoto } = require('./uploader.js');
 
 const router = express.Router();
 
+const logger = require('./logging.js');
+
 const uploader = require('./uploader.js');
 const upload = uploader.upload('events');
 
@@ -60,7 +62,7 @@ router.get('/', (req, res) => {
 
         
     } catch(error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
 });
@@ -68,6 +70,7 @@ router.get('/', (req, res) => {
 router.post('/', validUser, upload.single('image'), async (req, res) => {
     try {
         if (!req.body.title || !req.body.startDate || !req.body.endDate) {
+            logger.error('Invalid body parameters for events', req.session.userID);
             return res.status(400).send({
                 message: "Invalid body parameters"
             });
@@ -84,9 +87,11 @@ router.post('/', validUser, upload.single('image'), async (req, res) => {
 
         await event.save();
 
+        logger.info('Created new event ' + event._id, req.session.userID);
+
         return res.send(event);
     } catch(error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
 });
@@ -94,6 +99,7 @@ router.post('/', validUser, upload.single('image'), async (req, res) => {
 router.put('/:id', validUser, upload.single('image'), async (req, res) => {
     try {
         if (!req.body.title || !req.body.startDate || !req.body.endDate) {
+            logger.error('Invalid body parameters for edit event', req.session.userID);
             return res.status(400).send({
                 message: "Invalid body parameters"
             });
@@ -117,6 +123,7 @@ router.put('/:id', validUser, upload.single('image'), async (req, res) => {
         }
 
         if (!event) {
+            logger.error('Could not find event or invalid user', req.session.userID);
             return res.status(400).send({
                 message: "Could not find event or invalid user"
             });
@@ -140,9 +147,11 @@ router.put('/:id', validUser, upload.single('image'), async (req, res) => {
 
         await event.save();
 
+        logger.info('Edited event ' + event._id, req.session.userID);
+
         return res.send(event);
     } catch(error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
 });
@@ -167,6 +176,7 @@ router.delete('/:id', validUser, async (req, res) => {
         }
 
         if (!event) {
+            logger.error("Either could not find event with id " + req.params.id + " or invalid user", req.session.userID);
             return res.status(400).send({
                 message: "Either could not find event with id " + req.params.id + " or invalid user"
             });
@@ -177,7 +187,9 @@ router.delete('/:id', validUser, async (req, res) => {
             if (req.user.hasRole('Admin')) {
                 deletePhoto(event.image);
                 await event.delete();
+                logger.info('Hard deleted event ' + event._id, req.session.userID);
             } else {
+                logger.error('Only admins can do hard delete on events', req.session.userID);
                 return res.status(400).send({
                     message: "Only admins can do a hard delete"
                 });
@@ -185,11 +197,13 @@ router.delete('/:id', validUser, async (req, res) => {
         } else {
             event.isDeleted = true;
             await event.save();
+
+            logger.info('Deleted event', req.session.userID);
         }
 
         res.sendStatus(200);
     } catch (error) {
-        console.log(error);
+        logger.error(error, req.session.userID);
         res.sendStatus(500);
     }
     

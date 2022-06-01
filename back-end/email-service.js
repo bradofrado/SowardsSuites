@@ -19,7 +19,7 @@ function dateFormat(date) {
 
 const sendEmail = async (to, subject, text) => {
     //Don't send emails in development mode
-    if (env.mode === 'development') {
+    if (env.isDevelopment) {
         return;
     }
 
