@@ -60,7 +60,7 @@ button:focus, button:focus-visible {
 
 .container.header-container {
     max-width: 100%;
-    min-height: 80px;
+    min-height: 50px;
 }
 
 .navbar-collapse {
