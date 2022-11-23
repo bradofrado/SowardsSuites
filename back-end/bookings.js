@@ -1,13 +1,109 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const moment = require('moment');
 const mailer = require('./email-service.js');
+const dayjs = require('dayjs');
 
 const router = express.Router();
 
 const rooms = require('./rooms.js');
 const users = require('./users.js');
 const logger = require('./logging.js');
+
+const getRoomNamesString = function(rooms) {
+    return rooms.reduce((prev, curr, i) => {
+        prev += `${curr.name}`;
+
+        if (i < numRooms - 1) {
+            if (numRooms == 2) {
+                prev += ' and ';
+            } else if (i === numRooms - 2) {
+                prev += ', and ';
+            } else {
+                prev += ', ';
+            }
+        }
+
+        return prev;
+    }, '');
+}
+
+function dateFormat(date) {
+    return date ? dayjs(date).format('MM/DD/YYYY') : ''
+}
+
+const sendNewBookingEmails = async (booking) => {
+    if (!booking.user || !booking.user.firstname) {
+        throw Error("Booking must have user to send notification email");
+    }
+
+    const numRooms = booking.rooms.length;
+
+    if (!numRooms) {
+        throw Error("Booking must have rooms");
+    }
+    
+    const roomNames = getRoomNamesString(booking.rooms);
+
+    const subject = `New Booking-${booking.user.firstname} ${booking.user.lastname}`;
+    const message = `${booking.user.firstname} just booked the room${numRooms > 1 ? 's' : ''} ${roomNames} from ${dateFormat(booking.startDate)} to ${dateFormat(booking.endDate)}`
+    
+    const toSends = await users.getRoles(['Notify']);
+
+    for (let i = 0; i < toSends.length; i++) {
+        await mailer.sendEmail(toSends[i].email, subject, message);
+    }
+    
+}
+
+const sendEditBookingEmails = async function(booking, oldStart, oldEnd) {
+    if (!booking.user || !booking.user.firstname) {
+        throw Error("Booking must have user to send notification email");
+    }
+
+    if (!oldStart || !oldEnd) {
+        throw Error("Must have old dates to send edit email");
+    }
+
+    const numRooms = booking.rooms.length;
+
+    if (!numRooms) {
+        throw Error("Booking must have rooms");
+    }
+    
+    const roomNames = getRoomNamesString(booking.rooms);
+
+    const subject = `Edit Booking-${booking.user.firstname} ${booking.user.lastname}`;
+    const message = `${booking.user.firstname} just changed his/her booking on ${dateFormat(oldStart)}-${dateFormat(oldEnd)} to the room${numRooms > 1 ? 's' : ''} ${roomNames} from ${dateFormat(booking.startDate)} to ${dateFormat(booking.endDate)}`
+    
+    const toSends = await users.getRoles(['Notify']);
+
+    for (let i = 0; i < toSends.length; i++) {
+        await mailer.sendEmail(toSends[i].email, subject, message);
+    }
+}
+
+const sendDeleteBookingEmails = async function(booking) {
+    if (!booking.user || !booking.user.firstname) {
+        throw Error("Booking must have user to send notification email");
+    }
+
+    const numRooms = booking.rooms.length;
+
+    if (!numRooms) {
+        throw Error("Booking must have rooms");
+    }
+    
+    const roomNames = getRoomNamesString(booking.rooms);
+
+    const subject = `Deleted Booking-${booking.user.firstname} ${booking.user.lastname}`;
+    const message = `${booking.user.firstname} just deleted his/her booking on ${dateFormat(booking.startDate)}-${dateFormat(booking.endDate)}.`
+    
+    const toSends = await users.getRoles(['Notify']);
+
+    for (let i = 0; i < toSends.length; i++) {
+        await mailer.sendEmail(toSends[i].email, subject, message);
+    }
+}
 
 
 const bookingSchema = new mongoose.Schema({
@@ -189,7 +285,7 @@ router.post('/', validUser, checkDate, async (req, res) => {
 
         //We need to populate the rooms before sending an email
         await booking.populate('rooms');
-        await mailer.sendNewBookingEmails(booking);
+        await sendNewBookingEmails(booking);
 
         logger.info('Created new booking: ' + booking._id, req.user._id);
     
@@ -254,7 +350,7 @@ router.put('/:id', validUser, checkDate, async (req, res) => {
         await booking.save();
 
         await booking.populate('rooms user');
-        await mailer.sendEditBookingEmails(booking, oldStart, oldEnd);
+        await sendEditBookingEmails(booking, oldStart, oldEnd);
 
         logger.info('Edited booking ' + booking._id, req.session.userID);
     
@@ -308,7 +404,7 @@ router.delete('/:id', validUser, async (req, res) => {
             logger.info('Deleted booking ' + booking._id, req.session.userID);
 
             await booking.populate('rooms user');
-            await mailer.sendDeleteBookingEmails(booking);
+            await sendDeleteBookingEmails(booking);
         }
 
         res.sendStatus(200);

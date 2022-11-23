@@ -48,7 +48,7 @@ userSchema.methods.toJSON = function() {
 }
 
 userSchema.methods.hasRoles = function(roles) {
-    return roles.every(role => this.roles.includes(role));
+    return roles.every(role => this.roles.findIndex(x => role.includes(x)) > -1);
 }
 
 const User = mongoose.model('User', userSchema);

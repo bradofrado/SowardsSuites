@@ -5,12 +5,30 @@ const { deletePhoto } = require('./uploader.js');
 const router = express.Router();
 
 const logger = require('./logging.js');
+const mailer = require('./email-service.js');
 
 const uploader = require('./uploader.js');
 const upload = uploader.upload('events');
 
 const users = require('./users.js');
 const validUser = users.valid;
+
+const sendNewEventEmails = async (event) => {
+    if (!event.user || !event.user.firstname) {
+        throw Error("Event must have user to send notification email");
+    }
+
+    const subject = `New Event-${event.title}`;
+    let message = `${event.user.firstname} just created a new event\n`;
+    message += event.title + '\n';
+    message += event.description + '\n';
+
+    const toSends = await users.getRoles(['Notify:events']);
+
+    for (let i = 0; i < toSends.length; i++) {
+        await mailer.sendEmail(toSends[i].email, subject, message);
+    }
+}
 
 const eventsSchema = new mongoose.Schema({
     startDate: Date,
@@ -86,6 +104,7 @@ router.post('/', validUser, upload.single('image'), async (req, res) => {
         });
 
         await event.save();
+        await sendNewEventEmails(event);
 
         logger.info('Created new event ' + event._id, req.session.userID);
 
