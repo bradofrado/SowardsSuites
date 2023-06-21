@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const argon2 = require('argon2');
 
 const logger = require('./logging.js');
+const mailer = require('./email-service.js');
+const env = require('./env.js');
+const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 
@@ -16,6 +19,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     }]
+});
+
+const forgotPasswordSchema = new mongoose.Schema({
+	username: String,
+	authtoken: String
 });
 
 userSchema.pre('save', async function(next) {
@@ -52,6 +60,7 @@ userSchema.methods.hasRoles = function(roles) {
 }
 
 const User = mongoose.model('User', userSchema);
+const ForgotPassword = mongoose.model('ForgotPassword', forgotPasswordSchema);
 
 /* Middleware */
 const validUserRoles = async (req, res, next, roles) => {
@@ -211,6 +220,44 @@ router.post('/login', async (req, res) => {
       return res.sendStatus(500);
     }
 });
+
+router.post('/forgot', async (req, res) => {
+	if (!req.body.email) {
+		return res.status(400).send({
+			message: "must include email"
+		});
+	}
+	try {
+		//  lookup user record
+		const user = await User.findOne({
+			email: req.body.email.toLowerCase()
+		});
+
+		 // Return an error if user does not exist.
+		 if (!user) {
+			logger.error('Failed forgot password: ' + req.body.email);
+
+			return res.status(403).send({
+				message: "email is incorrect"
+			});
+        }
+
+		const uuid = uuidv4();
+		const forgotPassword = new ForgotPassword({
+			username: user.username,
+			authtoken: uuid
+		});
+
+		await forgotPassword.save();
+		const forgotPasswordUrl = `${env.site}/forgot-my-password?id=${uuid}&username=${user.username}`;
+		const text = `Please visit this link to reset your password <a href="${forgotPasswordUrl}">here</a>.`;
+		await mailer.sendEmail(user.email, "Forgot My Password", text);
+		res.sendStatus(200);
+	} catch (error) {
+		logger.error(error, req.session.userID);
+		return res.sendStatus(500);
+	}
+})
 
 // get logged in user
 router.get('/', validUser, async (req, res) => {

@@ -19,9 +19,9 @@ function dateFormat(date) {
 
 const sendEmail = async (to, subject, text) => {
     //Don't send emails in development mode
-    if (env.isDevelopment) {
-        return;
-    }
+    // if (env.isDevelopment) {
+    //     return;
+    // }
 
     try {
         // send mail with defined transport object
@@ -29,7 +29,7 @@ const sendEmail = async (to, subject, text) => {
             from: 'Sowards Suites <bradofrado@gmail.com>', 
             to: to, 
             subject: subject, 
-            text: text, 
+            html: text, 
         });
 
         console.log(`Sent email to ${to} with subject ${subject} and id ${info.messageId}`);
