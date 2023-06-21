@@ -249,9 +249,43 @@ router.post('/forgot', async (req, res) => {
 		});
 
 		await forgotPassword.save();
-		const forgotPasswordUrl = `${env.site}/forgot-my-password?id=${uuid}&username=${user.username}`;
+		const forgotPasswordUrl = `${env.site}/password-reset?id=${uuid}&username=${user.username}`;
 		const text = `Please visit this link to reset your password <a href="${forgotPasswordUrl}">here</a>.`;
 		await mailer.sendEmail(user.email, "Forgot My Password", text);
+		res.sendStatus(200);
+	} catch (error) {
+		logger.error(error, req.session.userID);
+		return res.sendStatus(500);
+	}
+})
+
+router.post('/reset', async (req, res) => {
+	if (!req.body.username || !req.body.id || !req.body.password) {
+		return res.status(400).send({
+			message: "Invalid body parameters"
+		});
+	}
+	try {
+		const forgot = await ForgotPassword.findOne({
+			username: req.body.username.toLowerCase(),
+			authtoken: req.body.id
+		});
+
+		const user = await User.findOne({
+			username: req.body.username.toLowerCase()
+		});
+
+		 // Return an error if user does not exist.
+		 if (!forgot || !user) {
+			logger.error(`Failed password reset: ${req.body.username}, ${req.body.id}`);
+
+			return res.status(403).send({
+				message: "username and/or authtoken are incorrect"
+			});
+        }
+
+		user.password = req.body.password;
+		await user.save();
 		res.sendStatus(200);
 	} catch (error) {
 		logger.error(error, req.session.userID);
