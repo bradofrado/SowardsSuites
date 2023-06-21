@@ -3,7 +3,7 @@
     <div v-if="user">
         <User/>
     </div>
-    <div v-else-if="loggingIn">
+    <div v-else-if="view =='login'">
         <h1>Log in</h1>
         <p>Welcome to Sowards' Suites</p>
         <div class="signin-container">
@@ -14,13 +14,16 @@
                 <div class="form-field">
                     <input type='password' placeholder="Password" v-model="password"/>
                 </div>
-                <button type="submit" class="button button-primary h-2" @click.prevent="login">Log in</button>
+								<button type="submit" class="button button-primary h-2" @click.prevent="login">Log in</button>
                 <p class="error-text mt-2 mb-0" v-if="error">{{error}}</p>
-                <a class="mt-1" href="" @click.prevent="toggleLoginView">Sign up</a>
+								<div class="mt-1 d-flex justify-content-around">
+									<a href="" @click.prevent="toggleView('signup')">Sign up</a>
+									<a href="ml-1" @click.prevent="toggleView('password')">Forgot my password</a>
+                </div>
             </form>
         </div>
     </div>
-    <div v-else>
+    <div v-else-if="view=='signup'">
         <h1>Sign Up</h1>
         <div class="signin-container">
             <form class="d-flex flex-column">
@@ -45,10 +48,25 @@
                 </fieldset>
                 <button type="submit" class="button button-primary" @click.prevent="register">Sign Up</button>
                 <p class="error-text" v-if="error">{{error}}</p>
-                <a href="" @click.prevent="toggleLoginView">Log in</a>
+                <a href="" @click.prevent="toggleView('login')">Log in</a>
             </form>
         </div>
     </div>
+		<div v-else>
+			<h1>Forgot my password</h1>
+			<div class="signin-container">
+			<form class="d-flex flex-column">
+				<fieldset>
+						<div class="form-field">
+								<input type='text' placeholder="Email" v-model="email"/>
+						</div>
+				</fieldset>
+				<button type="submit" class="button button-primary" @click.prevent="sendForgotPasswordLink">Send Link</button>
+				<p class="error-text" v-if="error">{{error}}</p>
+				<a href="" @click.prevent="toggleView('login')">Log in</a>
+			</form>
+			</div>
+		</div>
 </div>
 </template>
 
@@ -67,7 +85,7 @@ export default {
             username: "",
             email: "",
             error: null,
-            loggingIn: true
+            view: "login"
         }
     },
     async created() {
@@ -137,8 +155,23 @@ export default {
                 this.error = error.response.data.message;
             }
         },
-        toggleLoginView() {
-            this.loggingIn = !this.loggingIn;
+				async sendForgotPasswordLink() {
+						try {
+								this.$root.$data.isLoading = true;
+								await axios.post('/api/users/forgot', {
+										username: this.username,
+								});
+								
+								this.$root.$data.isLoading = false;
+								
+								this.clearAll();
+						} catch(error) {
+								this.$root.$data.isLoading = false;
+								this.error = error.response.data.message;
+						}
+				},
+        toggleView(newView) {
+            this.view = newView;
             this.clearAll();
         }
     }
