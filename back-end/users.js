@@ -5,9 +5,12 @@ const argon2 = require('argon2');
 const logger = require('./logging.js');
 const mailer = require('./email-service.js');
 const env = require('./env.js');
+const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
+
+const expirationTime = 15;
 
 const userSchema = new mongoose.Schema({
     username: String,
@@ -23,7 +26,16 @@ const userSchema = new mongoose.Schema({
 
 const forgotPasswordSchema = new mongoose.Schema({
 	username: String,
-	authtoken: String
+	authtoken: String,
+	expirationDate: Date,
+	isDeleted: {
+		type: Boolean,
+		default: false
+	}
+});
+
+forgotPasswordSchema.pre(/^find/, function() {
+    this.where({isDeleted: false, expirationDate: { $gte: new Date() }}).sort({expirationDate: 1});
 });
 
 userSchema.pre('save', async function(next) {
@@ -135,7 +147,7 @@ router.post('/', async (req, res) => {
 
     try {
         const existingUser = await User.findOne({
-            username: req.body.username
+            username: req.body.username.toLowerCase()
         });
         if (existingUser) {
             logger.error('Username already exists: ' + req.body.username);
@@ -185,7 +197,7 @@ router.post('/login', async (req, res) => {
     try {
         //  lookup user record
         const user = await User.findOne({
-            username: req.body.username
+            username: req.body.username.toLowerCase()
         });
 
         // Return an error if user does not exist.
@@ -245,12 +257,13 @@ router.post('/forgot', async (req, res) => {
 		const uuid = uuidv4();
 		const forgotPassword = new ForgotPassword({
 			username: user.username,
-			authtoken: uuid
+			authtoken: uuid,
+			expirationDate: moment(new Date()).add(expirationTime, 'm').toDate()
 		});
 
 		await forgotPassword.save();
 		const forgotPasswordUrl = `${env.site}/password-reset?id=${uuid}&username=${user.username}`;
-		const text = `Please visit this link to reset your password <a href="${forgotPasswordUrl}">here</a>.`;
+		const text = `Please visit this link to reset your password <a href="${forgotPasswordUrl}">here</a>. The link will expire in ${expirationTime} minutes`;
 		await mailer.sendEmail(user.email, "Forgot My Password", text);
 		res.sendStatus(200);
 	} catch (error) {
@@ -280,12 +293,16 @@ router.post('/reset', async (req, res) => {
 			logger.error(`Failed password reset: ${req.body.username}, ${req.body.id}`);
 
 			return res.status(403).send({
-				message: "username and/or authtoken are incorrect"
+				message: "invalid or expired link"
 			});
         }
 
+		forgot.isDeleted = true;
+		await forgot.save();
+
 		user.password = req.body.password;
 		await user.save();
+
 		res.sendStatus(200);
 	} catch (error) {
 		logger.error(error, req.session.userID);
