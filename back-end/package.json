@@ -19,6 +19,7 @@
     "mongoose": "^6.2.7",
     "multer": "^1.4.4",
     "nodemailer": "^6.7.5",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "uuid": "^9.0.0"
   }
 }

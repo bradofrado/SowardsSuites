@@ -7,6 +7,7 @@ import BookView from '../views/BookView.vue'
 import LoginView from '../views/LoginView.vue'
 import RoomView from '../views/RoomView.vue'
 import EventsView from '../views/EventsView.vue'
+import PasswordResetView from '../views/PasswordResetView.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -39,6 +40,11 @@ const routes = [
     path: '/events',
     name: 'events',
     component: EventsView
+},
+{
+	path: '/password-reset',
+	name: 'passwordReset',
+	component: PasswordResetView
 },
   { path: "*", component: PageNotFound }
 ]

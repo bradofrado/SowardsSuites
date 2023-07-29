@@ -1,6 +1,5 @@
 const nodemailer = require("nodemailer");
 const dayjs = require('dayjs');
-const userController = require('./users.js');
 const env = require('./env.js');
 
 let transporter = nodemailer.createTransport({
@@ -29,17 +28,17 @@ const sendEmail = async (to, subject, text) => {
             from: 'Sowards Suites <bradofrado@gmail.com>', 
             to: to, 
             subject: subject, 
-            text: text, 
+            html: text, 
         });
 
-        console.log(`Sent email to ${to} with subject ${subject} and id ${info.messageId}`);
+        console.log(`Sent email to ${to} with subject ${subject}, text ${text}, and id ${info.messageId}`);
     } catch(error) {
         console.log(error);
     }
     
 }
 
-const sendNewBookingEmails = async (booking) => {
+const sendNewBookingEmails = async (booking, toSends) => {
     if (!booking.user || !booking.user.firstname) {
         throw Error("Booking must have user to send notification email");
     }
@@ -69,15 +68,13 @@ const sendNewBookingEmails = async (booking) => {
     const subject = `New Booking-${booking.user.firstname} ${booking.user.lastname}`;
     const message = `${booking.user.firstname} just booked the room${numRooms > 1 ? 's' : ''} ${roomNames} from ${dateFormat(booking.startDate)} to ${dateFormat(booking.endDate)}`
     
-    const toSends = await userController.getRoles(['Notify']);
-
     for (let i = 0; i < toSends.length; i++) {
         await sendEmail(toSends[i].email, subject, message);
     }
     
 }
 
-const sendEditBookingEmails = async function(booking, oldStart, oldEnd) {
+const sendEditBookingEmails = async function(booking, oldStart, oldEnd, toSends) {
     if (!booking.user || !booking.user.firstname) {
         throw Error("Booking must have user to send notification email");
     }
@@ -110,15 +107,13 @@ const sendEditBookingEmails = async function(booking, oldStart, oldEnd) {
 
     const subject = `Edit Booking-${booking.user.firstname} ${booking.user.lastname}`;
     const message = `${booking.user.firstname} just changed his/her booking on ${dateFormat(oldStart)}-${dateFormat(oldEnd)} to the room${numRooms > 1 ? 's' : ''} ${roomNames} from ${dateFormat(booking.startDate)} to ${dateFormat(booking.endDate)}`
-    
-    const toSends = await userController.getRoles(['Notify']);
 
     for (let i = 0; i < toSends.length; i++) {
         await sendEmail(toSends[i].email, subject, message);
     }
 }
 
-const sendDeleteBookingEmails = async function(booking) {
+const sendDeleteBookingEmails = async function(booking, toSends) {
     if (!booking.user || !booking.user.firstname) {
         throw Error("Booking must have user to send notification email");
     }
@@ -148,8 +143,6 @@ const sendDeleteBookingEmails = async function(booking) {
     const subject = `Deleted Booking-${booking.user.firstname} ${booking.user.lastname}`;
     const message = `${booking.user.firstname} just deleted his/her booking on ${dateFormat(booking.startDate)}-${dateFormat(booking.endDate)}.`
     
-    const toSends = await userController.getRoles(['Notify']);
-
     for (let i = 0; i < toSends.length; i++) {
         await sendEmail(toSends[i].email, subject, message);
     }

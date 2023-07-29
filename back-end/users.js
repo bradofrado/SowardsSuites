@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 const argon2 = require('argon2');
 
 const logger = require('./logging.js');
+const mailer = require('./email-service.js');
+const env = require('./env.js');
+const moment = require('moment');
+const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
+
+const expirationTime = 15;
 
 const userSchema = new mongoose.Schema({
     username: String,
@@ -16,6 +22,20 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     }]
+});
+
+const forgotPasswordSchema = new mongoose.Schema({
+	username: String,
+	authtoken: String,
+	expirationDate: Date,
+	isDeleted: {
+		type: Boolean,
+		default: false
+	}
+});
+
+forgotPasswordSchema.pre(/^find/, function() {
+    this.where({isDeleted: false, expirationDate: { $gte: new Date() }}).sort({expirationDate: 1});
 });
 
 userSchema.pre('save', async function(next) {
@@ -52,6 +72,7 @@ userSchema.methods.hasRoles = function(roles) {
 }
 
 const User = mongoose.model('User', userSchema);
+const ForgotPassword = mongoose.model('ForgotPassword', forgotPasswordSchema);
 
 /* Middleware */
 const validUserRoles = async (req, res, next, roles) => {
@@ -125,18 +146,19 @@ router.post('/', async (req, res) => {
     }
 
     try {
+        const username = req.body.username.toLowerCase()
         const existingUser = await User.findOne({
-            username: req.body.username
+            username: username
         });
         if (existingUser) {
-            logger.error('Username already exists: ' + req.body.username);
+            logger.error('Username already exists: ' + username);
             return res.status(403).send({
                 message: "username already exists"
             });
         }
 
         if (req.body.role) {
-            logger.error('Tried to specify role: ' + req.body.username);
+            logger.error('Tried to specify role: ' + username);
             return res.status(403).send({
                 message: "Must be admin to specify role"
             })
@@ -145,8 +167,8 @@ router.post('/', async (req, res) => {
         const user = new User({
             firstname: req.body.firstname,
             lastname: req.body.lastname,
-            email: req.body.email,
-            username: req.body.username,
+            email: req.body.email.toLowerCase(),
+            username: username,
             password: req.body.password
         });
         await user.save();
@@ -174,14 +196,15 @@ router.post('/login', async (req, res) => {
       });
   
     try {
+        const username = req.body.username.toLowerCase()
         //  lookup user record
         const user = await User.findOne({
-            username: req.body.username
+            username: username
         });
 
         // Return an error if user does not exist.
         if (!user) {
-            logger.error('Failed login: ' + req.body.username);
+            logger.error('Failed login: ' + username);
 
             return res.status(403).send({
                 message: "username or password is incorrect"
@@ -191,7 +214,7 @@ router.post('/login', async (req, res) => {
         // Return the SAME error if the password is wrong. This ensure we don't
         // leak any information about which users exist.
         if (!await user.comparePassword(req.body.password)) {
-            logger.error('Failed login: ' + req.body.username);
+            logger.error('Failed login: ' + username);
 
             return res.status(403).send({
                 message: "username or password is incorrect"
@@ -211,6 +234,85 @@ router.post('/login', async (req, res) => {
       return res.sendStatus(500);
     }
 });
+
+router.post('/forgot', async (req, res) => {
+	if (!req.body.email) {
+		return res.status(400).send({
+			message: "must include email"
+		});
+	}
+	try {
+        const email = req.body.email.toLowerCase()
+		//  lookup user record
+		const user = await User.findOne({
+			email: email
+		});
+
+		 // Return an error if user does not exist.
+		 if (!user) {
+			logger.error('Failed forgot password: ' + email);
+
+			return res.status(403).send({
+				message: "email is incorrect"
+			});
+        }
+
+		const uuid = uuidv4();
+		const forgotPassword = new ForgotPassword({
+			username: user.username,
+			authtoken: uuid,
+			expirationDate: moment(new Date()).add(expirationTime, 'm').toDate()
+		});
+
+		await forgotPassword.save();
+		const forgotPasswordUrl = `${env.site}/password-reset?id=${uuid}&username=${user.username}`;
+		const text = `Please visit this link to reset your password <a href="${forgotPasswordUrl}">here</a>. The link will expire in ${expirationTime} minutes`;
+		await mailer.sendEmail(user.email, "Forgot My Password", text);
+		res.sendStatus(200);
+	} catch (error) {
+		logger.error(error, req.session.userID);
+		return res.sendStatus(500);
+	}
+})
+
+router.post('/reset', async (req, res) => {
+	if (!req.body.username || !req.body.id || !req.body.password) {
+		return res.status(400).send({
+			message: "Invalid body parameters"
+		});
+	}
+	try {
+        const username = req.body.username.toLowerCase()
+		const forgot = await ForgotPassword.findOne({
+			username: username,
+			authtoken: req.body.id
+		});
+
+		const user = await User.findOne({
+			username: username
+		});
+
+		 // Return an error if user does not exist.
+		 if (!forgot || !user) {
+			logger.error(`Failed password reset: ${username}, ${req.body.id}`);
+
+			return res.status(403).send({
+				message: "invalid or expired link"
+			});
+        }
+
+		forgot.isDeleted = true;
+		await forgot.save();
+
+		user.password = req.body.password;
+		await user.save();
+
+		res.sendStatus(200);
+	} catch (error) {
+		logger.error(error, req.session.userID);
+		return res.sendStatus(500);
+	}
+})
 
 // get logged in user
 router.get('/', validUser, async (req, res) => {

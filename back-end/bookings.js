@@ -1,13 +1,26 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const moment = require('moment');
-const mailer = require('./email-service.js');
+const mailerController = require('./email-service.js');
 
 const router = express.Router();
 
 const rooms = require('./rooms.js');
 const users = require('./users.js');
 const logger = require('./logging.js');
+
+const mailer = Object.entries(mailerController).reduce((prev, [key, value]) => {
+    if (typeof value == 'function') {
+        prev[key] = async (...args) => {
+            const toSends = await users.getRoles(['Notify']);
+            return value(...args, toSends)
+        } 
+    } else {
+        prev[key] = value;
+    }
+
+    return prev;
+}, {})
 
 
 const bookingSchema = new mongoose.Schema({
