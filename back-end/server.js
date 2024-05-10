@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 app.use(bodyParser.json());
@@ -39,5 +40,11 @@ app.use("/api/users", users.routes);
 app.use('/api/rooms', rooms.routes);
 app.use('/api/bookings', bookings.routes);
 app.use('/api/events', events.routes);
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'dist')));
+    app.get('*', function(req, res) {
+        res.sendFile(path.join(__dirname, 'dist/index.html'));
+    });
+}
 
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
